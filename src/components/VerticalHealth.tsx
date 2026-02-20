@@ -1,5 +1,6 @@
 import { HealthBar } from './HealthBar';
 import { AlertTriangle, Clock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { HealthResult } from '@/services/healthScoring';
 
 interface VerticalHealthProps {
@@ -19,7 +20,11 @@ export function VerticalHealth({ health, verticalName }: VerticalHealthProps) {
         {noTasks ? (
           <span className="text-sm text-muted-foreground">—</span>
         ) : (
-          <span className="text-2xl font-bold text-primary">
+          <span className={cn('text-2xl font-bold', {
+            'text-health-high': health.score >= 70,
+            'text-health-medium': health.score >= 40 && health.score < 70,
+            'text-health-low': health.score < 40,
+          })}>
             {Math.round(health.score)}
           </span>
         )}
