@@ -47,13 +47,15 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-          {blocks.map(block => (
-            <BlockCard key={block.id} block={block} highlightTaskId={highlightTaskId} />
-          ))}
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+            {blocks.map(block => (
+              <BlockCard key={block.id} block={block} highlightTaskId={highlightTaskId} />
+            ))}
+          </div>
 
           {addingBlock ? (
-            <div className="glass-card p-4 space-y-3">
+            <div className="glass-card p-4 space-y-3 max-w-sm">
               <Input
                 value={newBlockName}
                 onChange={e => setNewBlockName(e.target.value)}
@@ -69,12 +71,12 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
           ) : (
             <button
               onClick={() => setAddingBlock(true)}
-              className="glass-card p-4 border-dashed flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors min-h-[120px]"
+              className="glass-card p-4 border-dashed flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors min-h-[80px] max-w-sm"
             >
               <Plus className="h-5 w-5" /> Add Block
             </button>
           )}
-        </div>
+        </>
       )}
     </div>
   );
