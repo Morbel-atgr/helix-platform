@@ -32,13 +32,13 @@ export default function Dashboard() {
       <header className="sticky top-0 z-40 bg-background border-b border-border">
         <div className="max-w-6xl mx-auto px-6">
           {/* Row 1: Brand + actions */}
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between py-3">
+            <div className="flex items-center gap-2">
               <HamburgerMenu
                 onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
-              <span className="iridescent-text leading-none" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '5rem' }}>Helix</span>
+              <span className="iridescent-text leading-none" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '2.5rem' }}>Helix</span>
             </div>
           </div>
 
