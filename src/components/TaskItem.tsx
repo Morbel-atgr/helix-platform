@@ -151,9 +151,34 @@ export function TaskItem({ task }: TaskItemProps) {
       </div>
 
       <div className="flex items-center gap-1">
-        <span className="text-xs font-mono text-muted-foreground px-1.5 py-0.5 rounded bg-muted" title="Priority weight">
-          P{task.importance_weight}
-        </span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="text-xs font-mono text-muted-foreground px-1.5 py-0.5 rounded bg-muted hover:bg-muted/80 cursor-pointer transition-colors" title="Click to change priority">
+              P{task.importance_weight}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-2" align="end">
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-muted-foreground">Priority (1–10)</p>
+              <div className="flex gap-1 flex-wrap max-w-[200px]">
+                {[1,2,3,4,5,6,7,8,9,10].map(w => (
+                  <button
+                    key={w}
+                    onClick={() => updateTask.mutate({ id: task.id, importance_weight: w })}
+                    className={cn(
+                      'w-7 h-7 rounded text-xs font-mono transition-colors',
+                      task.importance_weight === w
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    )}
+                  >
+                    {w}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
         <Button
           size="icon"
           variant="ghost"
