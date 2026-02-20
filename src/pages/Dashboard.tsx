@@ -29,16 +29,16 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="max-w-6xl mx-auto px-6">
+      <header className="sticky top-0 z-40 bg-background border-b border-border overflow-visible">
+        <div className="max-w-6xl mx-auto px-6 overflow-visible">
           {/* Row 1: Brand + actions */}
-          <div className="flex items-center justify-between py-3">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between py-3 overflow-visible">
+            <div className="flex items-center gap-2 overflow-visible">
               <HamburgerMenu
                 onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
-              <span className="iridescent-text leading-none overflow-visible pb-3" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '2.5rem' }}>Helix</span>
+              <span className="iridescent-text overflow-visible block pb-4" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '2.5rem', lineHeight: 1 }}>Helix</span>
             </div>
           </div>
 
