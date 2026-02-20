@@ -39,7 +39,7 @@ export default function Dashboard() {
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
             </div>
-            <span className="iridescent-text overflow-visible block pb-4 absolute left-1/2 -translate-x-1/2" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1, fontSize: '1.8rem', fontWeight: 300, position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)' }}>Helix</span>
+            <span className="iridescent-text overflow-visible block pb-4 absolute left-1/2 -translate-x-1/2" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1, fontSize: '2.5rem', fontWeight: 'bold', position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)' }}>Helix</span>
           </div>
 
           {/* Row 2: Tabs */}
