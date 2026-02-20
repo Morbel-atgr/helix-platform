@@ -93,22 +93,29 @@ export function HomePage() {
         {verticals.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {verticals.map(v => {
-              const h = verticalHealthMap[v.id] || { score: 100, overdueCount: 0, urgentCount: 0 };
+              const h = verticalHealthMap[v.id] || { score: null, overdueCount: 0, urgentCount: 0, hasActiveTasks: false };
+              const noTasks = h.score === null;
               return (
                 <div key={v.id} className="glass-card p-5 space-y-3">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
                     <h3 className="font-semibold text-foreground">{v.name}</h3>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{getHealthLabel(h.score)}</span>
-                    <span className={cn('font-semibold', {
-                      'text-health-high': h.score >= 70,
-                      'text-health-medium': h.score >= 40 && h.score < 70,
-                      'text-health-low': h.score < 40,
-                    })}>{Math.round(h.score)}%</span>
-                  </div>
-                  <HealthBar score={h.score} showLabel={false} />
+                  {noTasks ? (
+                    <p className="text-sm text-muted-foreground">No tasks yet</p>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">{getHealthLabel(h.score!)}</span>
+                        <span className={cn('font-semibold', {
+                          'text-health-high': h.score! >= 70,
+                          'text-health-medium': h.score! >= 40 && h.score! < 70,
+                          'text-health-low': h.score! < 40,
+                        })}>{Math.round(h.score!)}%</span>
+                      </div>
+                      <HealthBar score={h.score!} showLabel={false} />
+                    </>
+                  )}
                 </div>
               );
             })}
