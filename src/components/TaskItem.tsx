@@ -8,6 +8,7 @@ import { DeadlinePicker } from './DeadlinePicker';
 import { Trash2, Calendar as CalendarIcon, Pencil, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, differenceInCalendarDays } from 'date-fns';
+import { fireConfetti } from '@/lib/confetti';
 
 interface TaskItemProps {
   task: {
@@ -44,12 +45,20 @@ export function TaskItem({ task }: TaskItemProps) {
           : `${daysLeft}d left`
     : null;
 
+  const [justCompleted, setJustCompleted] = useState(false);
+
   const toggleStatus = () => {
+    const newDone = !isDone;
     updateTask.mutate({
       id: task.id,
-      status: isDone ? 'active' : 'done',
-      completed_at: isDone ? null : new Date().toISOString(),
+      status: newDone ? 'done' : 'active',
+      completed_at: newDone ? new Date().toISOString() : null,
     });
+    if (newDone) {
+      setJustCompleted(true);
+      fireConfetti();
+      setTimeout(() => setJustCompleted(false), 400);
+    }
   };
 
   const saveTitle = () => {
@@ -61,9 +70,10 @@ export function TaskItem({ task }: TaskItemProps) {
 
   return (
     <div className={cn(
-      'group flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
+      'group flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300',
       isDone ? 'opacity-50' : 'hover:bg-muted/50',
-      isOverdue && !isDone && 'border-l-2 border-destructive'
+      isOverdue && !isDone && 'border-l-2 border-destructive',
+      justCompleted && 'animate-task-done'
     )}>
       <Checkbox
         checked={isDone}

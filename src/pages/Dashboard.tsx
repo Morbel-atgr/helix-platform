@@ -89,17 +89,19 @@ export default function Dashboard() {
 
       {/* Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {page === 'calendar' ? (
-          <CalendarPage />
-        ) : page === 'how-it-works' ? (
-          <HowItWorks onBack={() => setPage('main')} />
-        ) : page === 'about' ? (
-          <About onBack={() => setPage('main')} />
-        ) : activeTab === null || !activeVertical ? (
-          <HomePage />
-        ) : (
-          <VerticalPage key={activeVertical.id} vertical={activeVertical} />
-        )}
+        <div key={`${page}-${activeTab}`} className="animate-fade-in">
+          {page === 'calendar' ? (
+            <CalendarPage />
+          ) : page === 'how-it-works' ? (
+            <HowItWorks onBack={() => setPage('main')} />
+          ) : page === 'about' ? (
+            <About onBack={() => setPage('main')} />
+          ) : activeTab === null || !activeVertical ? (
+            <HomePage />
+          ) : (
+            <VerticalPage key={activeVertical.id} vertical={activeVertical} />
+          )}
+        </div>
       </main>
     </div>
   );
