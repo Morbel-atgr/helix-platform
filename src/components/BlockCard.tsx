@@ -5,7 +5,7 @@ import { TaskItem } from './TaskItem';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { DeadlinePicker } from './DeadlinePicker';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Plus, MoreHorizontal, Pencil, Trash2, Check, X, CalendarIcon, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -36,10 +36,14 @@ export function BlockCard({ block }: BlockCardProps) {
 
   const handleCreateTask = () => {
     if (!newTaskTitle.trim()) return;
+    const dueDate = newTaskDue ? new Date(newTaskDue) : undefined;
+    if (dueDate && dueDate.getHours() === 0 && dueDate.getMinutes() === 0) {
+      dueDate.setHours(8, 0, 0, 0);
+    }
     createTask.mutate({
       block_id: block.id,
       title: newTaskTitle.trim(),
-      due_date: newTaskDue ? newTaskDue.toISOString() : undefined,
+      due_date: dueDate ? dueDate.toISOString() : undefined,
     });
     setNewTaskTitle('');
     setNewTaskDue(undefined);
@@ -146,11 +150,15 @@ export function BlockCard({ block }: BlockCardProps) {
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className={cn('h-7 text-xs gap-1.5 w-full justify-start', !newTaskDue && 'text-muted-foreground')}>
                 <CalendarIcon className="h-3 w-3" />
-                {newTaskDue ? format(newTaskDue, 'MMM d, yyyy') : 'Set deadline'}
+                {newTaskDue ? format(newTaskDue, 'MMM d, yyyy h:mm a') : 'Set deadline'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={newTaskDue} onSelect={setNewTaskDue} initialFocus disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} />
+              <DeadlinePicker
+                selected={newTaskDue}
+                onSelect={(d) => { if (d) setNewTaskDue(d); }}
+                disablePast
+              />
             </PopoverContent>
           </Popover>
         </div>
