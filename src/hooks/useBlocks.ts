@@ -59,3 +59,18 @@ export function useUpdateBlock() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['blocks'] }),
   });
 }
+
+export function useDeleteBlock() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('blocks').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['blocks'] });
+      qc.invalidateQueries({ queryKey: ['tasks'] });
+      qc.invalidateQueries({ queryKey: ['all-tasks'] });
+    },
+  });
+}
