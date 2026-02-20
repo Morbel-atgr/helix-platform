@@ -7,13 +7,12 @@ import { About } from './About';
 import { CalendarPage } from './CalendarPage';
 import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
-import { Home, Activity, LogOut, CalendarDays } from 'lucide-react';
+import { Home, Activity, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 
 export default function Dashboard() {
-  const { signOut } = useAuth();
   const { data: verticals = [] } = useVerticals();
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [page, setPage] = useState<'main' | 'how-it-works' | 'about' | 'calendar'>('main');
@@ -35,9 +34,6 @@ export default function Dashboard() {
               <Activity className="h-5 w-5 text-primary" />
               <span className="text-lg font-bold text-foreground">Helix</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground gap-1.5">
-              <LogOut className="h-4 w-4" /> Sign Out
-            </Button>
           </div>
 
           {/* Row 2: Tabs */}
