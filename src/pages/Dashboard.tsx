@@ -32,12 +32,12 @@ export default function Dashboard() {
       <header className="sticky top-0 z-40 bg-background border-b border-border overflow-visible">
         <div className="max-w-6xl mx-auto px-6 overflow-visible">
           {/* Row 1: Hamburger + centered Brand */}
-          <div className="flex items-center py-3 gap-2">
+          <div className="flex items-end py-3 gap-1">
             <HamburgerMenu
               onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
               onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
             />
-            <span className="iridescent-text overflow-visible" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal', paddingBottom: '0.15em' }}>Helix</span>
+            <span className="iridescent-text overflow-visible -ml-1" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal', paddingBottom: '0.15em', marginTop: '0.15em' }}>Helix</span>
           </div>
 
           {/* Row 2: Tabs */}
