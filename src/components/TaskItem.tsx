@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { DeadlinePicker } from './DeadlinePicker';
 import { Trash2, Calendar as CalendarIcon, Pencil, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, differenceInCalendarDays } from 'date-fns';
@@ -95,7 +95,7 @@ export function TaskItem({ task }: TaskItemProps) {
             <PopoverTrigger asChild>
               <button className={cn('flex items-center gap-1 mt-0.5 text-xs hover:underline cursor-pointer', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
                 <CalendarIcon className="h-3 w-3" />
-                {format(new Date(task.due_date), 'MMM d, yyyy')}
+                {format(new Date(task.due_date), 'MMM d, yyyy h:mm a')}
                 {daysLabel && (
                   <span className={cn(
                     'ml-1 font-medium',
@@ -107,21 +107,17 @@ export function TaskItem({ task }: TaskItemProps) {
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
+              <DeadlinePicker
                 selected={new Date(task.due_date)}
                 onSelect={(date) => {
                   if (date) {
                     updateTask.mutate({ id: task.id, due_date: date.toISOString() });
+                  } else {
+                    updateTask.mutate({ id: task.id, due_date: null });
                   }
                 }}
-                initialFocus
+                showRemove
               />
-              <div className="p-2 border-t">
-                <Button variant="ghost" size="sm" className="w-full text-xs text-destructive" onClick={() => updateTask.mutate({ id: task.id, due_date: null })}>
-                  Remove deadline
-                </Button>
-              </div>
             </PopoverContent>
           </Popover>
         )}
@@ -134,16 +130,14 @@ export function TaskItem({ task }: TaskItemProps) {
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
+              <DeadlinePicker
                 selected={undefined}
                 onSelect={(date) => {
                   if (date) {
                     updateTask.mutate({ id: task.id, due_date: date.toISOString() });
                   }
                 }}
-                initialFocus
-                disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                disablePast
               />
             </PopoverContent>
           </Popover>
