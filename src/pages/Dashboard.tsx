@@ -31,15 +31,15 @@ export default function Dashboard() {
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-background border-b border-border overflow-visible">
         <div className="max-w-6xl mx-auto px-6 overflow-visible">
-          {/* Row 1: Hamburger + centered Brand */}
-          <div className="flex items-center py-3 overflow-visible relative">
-            <div className="overflow-visible">
+          {/* Row 1: Hamburger left, Logo above Home tab */}
+          <div className="flex items-end pb-1 overflow-visible">
+            <div className="mr-4 overflow-visible">
               <HamburgerMenu
                 onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
             </div>
-            <span className="iridescent-text overflow-visible block pb-4 absolute left-1/2 -translate-x-1/2" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1, fontSize: '1.8rem', fontWeight: 300, position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)' }}>Helix</span>
+            <span className="iridescent-text overflow-visible block" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1, fontSize: '1.8rem', fontWeight: 300, paddingBottom: '0.3em' }}>Helix</span>
           </div>
 
           {/* Row 2: Tabs */}
