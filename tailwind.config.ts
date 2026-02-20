@@ -57,7 +57,7 @@ export default {
         "slide-up": { from: { opacity: "0", transform: "translateY(8px)" }, to: { opacity: "1", transform: "translateY(0)" } },
         "fade-in": { from: { opacity: "0" }, to: { opacity: "1" } },
         "task-done": { "0%": { transform: "scale(1)" }, "50%": { transform: "scale(0.95)" }, "100%": { transform: "scale(1)" } },
-        "highlight-pulse": { "0%": { backgroundColor: "hsl(var(--primary) / 0.22)" }, "40%": { backgroundColor: "hsl(var(--primary) / 0.18)" }, "100%": { backgroundColor: "hsl(var(--primary) / 0)" } },
+        "highlight-pulse": { "0%": { backgroundColor: "hsl(var(--primary) / 0)" }, "8%": { backgroundColor: "hsl(var(--primary) / 0.18)" }, "35%": { backgroundColor: "hsl(var(--primary) / 0.15)" }, "100%": { backgroundColor: "hsl(var(--primary) / 0)" } },
       },
       animation: {
         "accordion-down": "accordion-down 0.3s cubic-bezier(0.16,1,0.3,1)",
@@ -67,7 +67,7 @@ export default {
         "slide-up": "slide-up 0.35s cubic-bezier(0.16,1,0.3,1)",
         "fade-in": "fade-in 0.3s ease-out",
         "task-done": "task-done 0.3s ease-out",
-        "highlight-pulse": "highlight-pulse 8s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+        "highlight-pulse": "highlight-pulse 10s ease-in-out forwards",
       },
     },
   },
