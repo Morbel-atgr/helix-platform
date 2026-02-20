@@ -13,23 +13,23 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [errorField, setErrorField] = useState<'email' | 'password' | 'both' | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setHasError(false);
+    setErrorField(null);
 
     if (mode === 'forgot') {
       const { error } = await resetPassword(email);
-      if (error) { toast.error(error.message); setHasError(true); }
+      if (error) { toast.error(error.message); setErrorField('email'); }
       else toast.success('Check your email for a password reset link.');
     } else if (mode === 'login') {
       const { error } = await signIn(email, password);
-      if (error) { toast.error(error.message); setHasError(true); }
+      if (error) { toast.error(error.message); setErrorField('password'); }
     } else {
       const { error } = await signUp(email, password, name);
-      if (error) { toast.error(error.message); setHasError(true); }
+      if (error) { toast.error(error.message); setErrorField('both'); }
       else toast.success('Check your email to confirm your account.');
     }
 
@@ -56,12 +56,12 @@ export default function Auth() {
             )}
 
             <div className="space-y-1.5">
-              <Input id="email" type="email" value={email} onChange={e => { setEmail(e.target.value); setHasError(false); }} placeholder="Email" required className={hasError ? 'border-2 border-destructive ring-0 focus-visible:ring-0' : ''} />
+              <Input id="email" type="email" value={email} onChange={e => { setEmail(e.target.value); setErrorField(null); }} placeholder="Email" required className={errorField === 'email' || errorField === 'both' ? 'border-2 border-destructive ring-0 focus-visible:ring-0' : ''} />
             </div>
 
             {mode !== 'forgot' && (
               <div className="space-y-1.5">
-                <Input id="password" type="password" value={password} onChange={e => { setPassword(e.target.value); setHasError(false); }} placeholder="Password" required minLength={6} className={hasError ? 'border-2 border-destructive ring-0 focus-visible:ring-0' : ''} />
+                <Input id="password" type="password" value={password} onChange={e => { setPassword(e.target.value); setErrorField(null); }} placeholder="Password" required minLength={6} className={errorField === 'password' || errorField === 'both' ? 'border-2 border-destructive ring-0 focus-visible:ring-0' : ''} />
               </div>
             )}
 
