@@ -4,8 +4,8 @@
 
 @font-face {
   font-family: 'Bumbbled';
-  src: url('/fonts/Bumbbled.otf') format('opentype');
-  font-weight: 400;
+  src: url('/fonts/Bumbbled-Light.otf') format('opentype');
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
