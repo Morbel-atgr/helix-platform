@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, Activity } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
   const { signIn, signUp } = useAuth();
@@ -31,15 +31,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'hsl(210, 10%, 97%)' }}>
       <div className="w-full max-w-sm">
         <div className="glass-card p-8 space-y-6">
           {/* Logo */}
           <div className="text-center space-y-3">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted">
-              <Activity className="h-7 w-7 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</h1>
+            <h1 className="iridescent-text text-2xl" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</h1>
             <p className="text-muted-foreground text-sm">
               {isLogin ? 'Sign in to your account' : 'Create your account'}
             </p>
