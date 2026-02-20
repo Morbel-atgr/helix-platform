@@ -34,7 +34,7 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-brand text-gradient">
+          <h1 className="text-5xl font-brand text-gradient">
             Helix
           </h1>
           <p className="text-muted-foreground text-sm">

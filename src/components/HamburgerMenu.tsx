@@ -45,7 +45,7 @@ export function HamburgerMenu() {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-80 bg-card border-border">
+      <SheetContent side="left" className="w-80 bg-card border-border">
         <SheetHeader>
           <SheetTitle className="text-left text-foreground">Settings</SheetTitle>
         </SheetHeader>
