@@ -17,59 +17,60 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-1">
-              <div className="flex items-center gap-2 mr-4">
-                <img src={helixLogo} alt="Helix" className="h-8 w-8 rounded-lg" />
-                <h1 className="text-xl font-brand text-gradient">
+          <div className="flex items-center justify-between h-16">
+            {/* Left: Hamburger + Logo */}
+            <div className="flex items-center gap-3">
+              <HamburgerMenu />
+
+              <div className="flex items-center gap-2.5">
+                <img src={helixLogo} alt="Helix" className="h-9 w-9 rounded-lg" />
+                <h1 className="text-2xl font-brand text-gradient">
                   Helix
                 </h1>
               </div>
+            </div>
 
-              {/* Tabs */}
-              <nav className="flex items-center gap-0.5 overflow-x-auto">
+            {/* Center/Right: Tabs */}
+            <nav className="flex items-center gap-1 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab(null)}
+                className={cn(
+                  'px-3 py-2 rounded-md text-sm font-mono font-bold transition-colors whitespace-nowrap',
+                  activeTab === null
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                )}
+              >
+                <Home className="h-4 w-4 inline mr-1.5" />
+                Home
+              </button>
+
+              {verticals.map(v => (
                 <button
-                  onClick={() => setActiveTab(null)}
+                  key={v.id}
+                  onClick={() => setActiveTab(v.id)}
                   className={cn(
-                    'px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap',
-                    activeTab === null
+                    'px-3 py-2 rounded-md text-sm font-mono font-bold transition-colors whitespace-nowrap flex items-center gap-1.5',
+                    activeTab === v.id
                       ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   )}
                 >
-                  <Home className="h-4 w-4 inline mr-1.5" />
-                  Home
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
+                  {v.name}
                 </button>
+              ))}
 
-                {verticals.map(v => (
-                  <button
-                    key={v.id}
-                    onClick={() => setActiveTab(v.id)}
-                    className={cn(
-                      'px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
-                      activeTab === v.id
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                    )}
-                  >
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
-                    {v.name}
-                  </button>
-                ))}
-
-                <CreateVerticalDialog />
-              </nav>
-            </div>
-
-            <HamburgerMenu />
+              <CreateVerticalDialog />
+            </nav>
           </div>
         </div>
       </header>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {activeTab === null || !activeVertical ? (
           <HomePage />
         ) : (
