@@ -1,12 +1,9 @@
 import { useState, useMemo } from 'react';
-import { useVerticals } from '@/hooks/useVerticals';
-import { useBlocks } from '@/hooks/useBlocks';
-import { useAllTasks } from '@/hooks/useTasks';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   format,
@@ -16,10 +13,10 @@ import {
   endOfWeek,
   eachDayOfInterval,
   isSameMonth,
-  isSameDay,
   isToday,
   addMonths,
   subMonths,
+  differenceInCalendarDays,
 } from 'date-fns';
 
 interface CalendarTask {
@@ -32,11 +29,27 @@ interface CalendarTask {
   vertical_color: string;
 }
 
+function getDaysLabel(dueDate: string) {
+  const days = differenceInCalendarDays(new Date(dueDate), new Date());
+  if (days < 0) return { label: `${Math.abs(days)}d overdue`, urgency: 'overdue' as const };
+  if (days === 0) return { label: 'Today', urgency: 'today' as const };
+  if (days === 1) return { label: '1d', urgency: 'soon' as const };
+  if (days <= 7) return { label: `${days}d`, urgency: 'week' as const };
+  return { label: `${days}d`, urgency: 'safe' as const };
+}
+
+const urgencyColors = {
+  overdue: 'text-destructive',
+  today: 'text-health-low',
+  soon: 'text-health-low',
+  week: 'text-health-medium',
+  safe: 'text-primary',
+};
+
 export function CalendarPage() {
   const { user } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Fetch all tasks across all verticals
   const { data: tasks = [] } = useQuery({
     queryKey: ['calendar-tasks', user?.id],
     queryFn: async () => {
@@ -97,37 +110,60 @@ export function CalendarPage() {
       if (!map.has(dayKey)) map.set(dayKey, []);
       map.get(dayKey)!.push(task);
     });
+    // Sort tasks within each day: active first (by importance desc), then done
+    map.forEach((dayTasks, key) => {
+      map.set(key, dayTasks.sort((a, b) => {
+        if (a.status === 'done' && b.status !== 'done') return 1;
+        if (a.status !== 'done' && b.status === 'done') return -1;
+        return b.importance_weight - a.importance_weight;
+      }));
+    });
     return map;
   }, [tasks]);
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="space-y-4 animate-slide-up">
+    <div className="space-y-6 animate-slide-up">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">
-          {format(currentMonth, 'MMMM yyyy')}
-        </h1>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
-            <ChevronLeft className="h-4 w-4" />
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <CalendarDays className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">
+              {format(currentMonth, 'MMMM yyyy')}
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              {tasks.filter(t => t.status === 'active').length} active tasks
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+            <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" size="sm" className="text-xs" onClick={() => setCurrentMonth(new Date())}>
+          <Button
+            variant={isToday(currentMonth) ? 'default' : 'ghost'}
+            size="sm"
+            className="text-xs h-7 rounded-md px-3"
+            onClick={() => setCurrentMonth(new Date())}
+          >
             Today
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-            <ChevronRight className="h-4 w-4" />
+          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>
 
       {/* Calendar grid */}
-      <div className="glass-card overflow-hidden">
+      <div className="glass-card overflow-hidden rounded-xl">
         {/* Day headers */}
-        <div className="grid grid-cols-7 border-b border-border">
+        <div className="grid grid-cols-7 bg-muted/30">
           {weekDays.map(day => (
-            <div key={day} className="px-2 py-2 text-xs font-medium text-muted-foreground text-center">
+            <div key={day} className="px-2 py-3 text-[11px] font-semibold text-muted-foreground text-center uppercase tracking-wider">
               {day}
             </div>
           ))}
@@ -139,47 +175,63 @@ export function CalendarPage() {
             const dayKey = format(day, 'yyyy-MM-dd');
             const dayTasks = tasksByDay.get(dayKey) || [];
             const inMonth = isSameMonth(day, currentMonth);
+            const today = isToday(day);
 
             return (
               <div
                 key={dayKey}
                 className={cn(
-                  'min-h-[100px] border-b border-r border-border p-1.5 transition-colors',
-                  !inMonth && 'bg-muted/20',
-                  i % 7 === 0 && 'border-l-0',
-                  isToday(day) && 'bg-primary/5',
+                  'min-h-[110px] border-b border-r border-border/50 p-2 transition-all',
+                  !inMonth && 'bg-muted/10 opacity-40',
+                  today && 'bg-primary/[0.04] ring-1 ring-inset ring-primary/20',
+                  i % 7 === 6 && 'border-r-0',
                 )}
               >
-                <div className={cn(
-                  'text-xs font-medium mb-1 flex items-center justify-center w-6 h-6 rounded-full',
-                  isToday(day) && 'bg-primary text-primary-foreground',
-                  !isToday(day) && inMonth && 'text-foreground',
-                  !inMonth && 'text-muted-foreground/50',
-                )}>
-                  {format(day, 'd')}
+                {/* Date number */}
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className={cn(
+                    'text-xs font-medium flex items-center justify-center w-6 h-6 rounded-full transition-colors',
+                    today && 'bg-primary text-primary-foreground shadow-sm',
+                    !today && inMonth && 'text-foreground',
+                  )}>
+                    {format(day, 'd')}
+                  </div>
+                  {dayTasks.length > 0 && !today && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                  )}
                 </div>
 
-                <div className="space-y-0.5 overflow-hidden">
-                  {dayTasks.slice(0, 3).map(task => (
-                    <div
-                      key={task.id}
-                      className={cn(
-                        'text-[10px] leading-tight px-1.5 py-0.5 rounded truncate cursor-default',
-                        task.status === 'done'
-                          ? 'bg-muted text-muted-foreground line-through'
-                          : 'text-foreground font-medium'
-                      )}
-                      style={{
-                        backgroundColor: task.status !== 'done' ? `${task.vertical_color}20` : undefined,
-                        borderLeft: task.status !== 'done' ? `2px solid ${task.vertical_color}` : undefined,
-                      }}
-                      title={`${task.title} (${task.vertical_name}) P${task.importance_weight}`}
-                    >
-                      {task.title}
-                    </div>
-                  ))}
+                {/* Tasks */}
+                <div className="space-y-[3px] overflow-hidden">
+                  {dayTasks.slice(0, 3).map(task => {
+                    const isDone = task.status === 'done';
+                    const { label, urgency } = getDaysLabel(task.due_date);
+                    return (
+                      <div
+                        key={task.id}
+                        className={cn(
+                          'text-[10px] leading-tight px-1.5 py-[3px] rounded-md flex items-center gap-1 group/task cursor-default transition-all hover:shadow-sm',
+                          isDone
+                            ? 'bg-muted/60 text-muted-foreground line-through'
+                            : 'font-medium'
+                        )}
+                        style={!isDone ? {
+                          backgroundColor: `${task.vertical_color}12`,
+                          borderLeft: `2.5px solid ${task.vertical_color}`,
+                        } : undefined}
+                        title={`${task.title} · ${task.vertical_name} · P${task.importance_weight}`}
+                      >
+                        <span className="truncate flex-1">{task.title}</span>
+                        {!isDone && (
+                          <span className={cn('text-[9px] flex-shrink-0 font-semibold', urgencyColors[urgency])}>
+                            {label}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                   {dayTasks.length > 3 && (
-                    <div className="text-[10px] text-muted-foreground px-1.5">
+                    <div className="text-[10px] text-muted-foreground font-medium px-1.5 cursor-default">
                       +{dayTasks.length - 3} more
                     </div>
                   )}
