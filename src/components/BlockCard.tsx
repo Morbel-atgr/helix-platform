@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DeadlinePicker } from './DeadlinePicker';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Plus, MoreHorizontal, Pencil, Trash2, Check, X, CalendarIcon, ChevronDown } from 'lucide-react';
+import { Plus, MoreHorizontal, Pencil, Trash2, Check, X, CalendarIcon, ChevronDown, GripVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
@@ -21,9 +21,10 @@ interface BlockCardProps {
     vertical_id: string;
   };
   highlightTaskId?: string | null;
+  dragHandleProps?: React.HTMLAttributes<HTMLElement> | null;
 }
 
-export function BlockCard({ block, highlightTaskId }: BlockCardProps) {
+export function BlockCard({ block, highlightTaskId, dragHandleProps }: BlockCardProps) {
   const { data: tasks = [] } = useTasks(block.id);
   const createTask = useCreateTask();
   const updateBlock = useUpdateBlock();
@@ -75,6 +76,11 @@ export function BlockCard({ block, highlightTaskId }: BlockCardProps) {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="glass-card p-4 space-y-3 animate-slide-up">
       <div className="flex items-center justify-between">
+        {dragHandleProps && (
+          <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing p-0.5 -ml-1 mr-1 text-muted-foreground/40 hover:text-muted-foreground transition-colors flex-shrink-0">
+            <GripVertical className="h-4 w-4" />
+          </div>
+        )}
         {editingName ? (
           <div className="flex items-center gap-1 flex-1">
             <Input
