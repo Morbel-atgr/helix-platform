@@ -122,9 +122,19 @@ export function BlockCard({ block }: BlockCardProps) {
         </div>
       </div>
 
-      <CollapsibleContent className="space-y-0.5">
+      <CollapsibleContent className="space-y-1">
         {activeTasks.map(task => <TaskItem key={task.id} task={task} />)}
-        {doneTasks.map(task => <TaskItem key={task.id} task={task} />)}
+
+        {doneTasks.length > 0 && (
+          <div className="pt-2 mt-2 border-t border-border/50">
+            <p className="text-xs font-medium text-muted-foreground px-3 pb-1">Done</p>
+            {doneTasks.map(task => (
+              <div key={task.id} className="animate-fade-in">
+                <TaskItem task={task} />
+              </div>
+            ))}
+          </div>
+        )}
 
         {addingTask ? (
           <div className="space-y-2 pt-1">
