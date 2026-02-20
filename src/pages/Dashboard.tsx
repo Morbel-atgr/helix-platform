@@ -37,7 +37,7 @@ export default function Dashboard() {
               onSelectVertical={(id) => {setActiveTab(id);setPage('main');}}
               onNavigate={(p) => {setPage(p as any);setActiveTab(null);}} />
 
-            <span className="iridescent-text overflow-visible font-normal text-3xl pr-[5px]" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal' }}>Helix</span>
+            <span className="iridescent-text overflow-visible font-normal text-3xl pr-[5px] pt-[4px] pl-0 mx-0 pb-px" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal' }}>Helix</span>
           </div>
 
           {/* Row 2: Tabs */}
@@ -93,7 +93,7 @@ export default function Dashboard() {
 
       {/* Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
-        <div key={`${page}-${activeTab}`} className="animate-fade-in">
+        <div key={`${page}-${activeTab}`} className="animate-fade-in pl-0">
           {page === 'calendar' ?
           <CalendarPage /> :
           page === 'how-it-works' ?
