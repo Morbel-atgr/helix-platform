@@ -84,7 +84,7 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       {/* Greeting */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Hello, {profile?.name || 'there'}
+          Hello, <span className="iridescent-text">{profile?.name || 'there'}</span>
         </h1>
         <p className="text-muted-foreground mt-1">Here's how your life domains are doing.</p>
       </div>
