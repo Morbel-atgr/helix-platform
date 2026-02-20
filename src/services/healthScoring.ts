@@ -14,9 +14,10 @@ export interface ScoredTask {
 }
 
 export interface HealthResult {
-  score: number;          // 0–100
+  score: number | null;   // 0–100, null when no tasks exist
   overdueCount: number;
   urgentCount: number;    // due within 48h
+  hasActiveTasks: boolean;
 }
 
 const OVERDUE_MULTIPLIER = 3;
@@ -30,17 +31,19 @@ export function calculateHealth(tasks: ScoredTask[], now = new Date()): HealthRe
 
   const activeTasks = tasks.filter(t => t.status === 'active');
 
+  if (activeTasks.length === 0) {
+    return { score: null, overdueCount: 0, urgentCount: 0, hasActiveTasks: false };
+  }
+
   for (const task of activeTasks) {
     if (!task.due_date) continue;
     const due = new Date(task.due_date);
     const diff = due.getTime() - now.getTime();
 
     if (diff < 0) {
-      // overdue
       overdueCount++;
       penalty += task.importance_weight * OVERDUE_MULTIPLIER;
     } else if (diff <= URGENT_WINDOW_MS) {
-      // urgent (within 48h)
       urgentCount++;
       penalty += task.importance_weight * URGENT_MULTIPLIER;
     }
@@ -48,5 +51,5 @@ export function calculateHealth(tasks: ScoredTask[], now = new Date()): HealthRe
 
   const score = Math.max(0, Math.min(100, 100 - penalty));
 
-  return { score, overdueCount, urgentCount };
+  return { score, overdueCount, urgentCount, hasActiveTasks: true };
 }
