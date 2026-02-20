@@ -131,23 +131,17 @@
   .iridescent-text {
     background: linear-gradient(
       90deg,
-      hsl(280 70% 60%),
-      hsl(200 80% 55%),
-      hsl(160 70% 50%),
-      hsl(40 80% 55%),
-      hsl(320 70% 58%),
-      hsl(280 70% 60%)
+      hsl(210 100% 50%),
+      hsl(275 80% 55%),
+      hsl(330 85% 55%),
+      hsl(0 85% 55%),
+      hsl(30 90% 55%),
+      hsl(45 95% 55%),
+      hsl(120 60% 45%)
     );
-    background-size: 200% 100%;
+    background-size: 100% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: iridescent-shift 6s ease-in-out infinite;
-  }
-
-  @keyframes iridescent-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
   }
 }
