@@ -103,7 +103,7 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
               return (
                 <div
                   key={v.id}
-                  className="glass-card p-5 space-y-3 cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all"
+                  className="glass-card p-5 space-y-3 cursor-pointer hover:bg-muted/50 transition-all"
                   onClick={() => onNavigateToVertical?.(v.id)}
                 >
                   <div className="flex items-center gap-2">
