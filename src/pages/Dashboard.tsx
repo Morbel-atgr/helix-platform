@@ -38,7 +38,7 @@ export default function Dashboard() {
                 onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
-              <span className="iridescent-text leading-none" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '2.5rem' }}>Helix</span>
+              <span className="iridescent-text leading-none overflow-visible pb-3" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '2.5rem' }}>Helix</span>
             </div>
           </div>
 
