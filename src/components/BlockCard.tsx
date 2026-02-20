@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useTasks, useCreateTask } from '@/hooks/useTasks';
-import { useUpdateBlock } from '@/hooks/useBlocks';
+import { useUpdateBlock, useDeleteBlock } from '@/hooks/useBlocks';
 import { TaskItem } from './TaskItem';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Plus, MoreHorizontal, Pencil, Archive, Check, X, CalendarIcon } from 'lucide-react';
+import { Plus, MoreHorizontal, Pencil, Trash2, Check, X, CalendarIcon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -24,6 +25,7 @@ export function BlockCard({ block }: BlockCardProps) {
   const { data: tasks = [] } = useTasks(block.id);
   const createTask = useCreateTask();
   const updateBlock = useUpdateBlock();
+  const deleteBlock = useDeleteBlock();
 
   const [addingTask, setAddingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -84,9 +86,23 @@ export function BlockCard({ block }: BlockCardProps) {
               <DropdownMenuItem onClick={() => setEditingName(true)}>
                 <Pencil className="mr-2 h-3 w-3" /> Rename
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => updateBlock.mutate({ id: block.id, archived: true })} className="text-destructive">
-                <Archive className="mr-2 h-3 w-3" /> Archive
-              </DropdownMenuItem>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem onSelect={e => e.preventDefault()} className="text-destructive">
+                    <Trash2 className="mr-2 h-3 w-3" /> Delete
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete "{block.name}"?</AlertDialogTitle>
+                    <AlertDialogDescription>This will permanently delete this block and all its tasks. This cannot be undone.</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => deleteBlock.mutate(block.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
