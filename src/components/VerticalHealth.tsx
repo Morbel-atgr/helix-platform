@@ -17,16 +17,8 @@ export function VerticalHealth({ health, verticalName }: VerticalHealthProps) {
         <h2 className="text-lg font-semibold text-foreground">
           {verticalName} Health
         </h2>
-        {noTasks ? (
+        {noTasks && (
           <span className="text-sm text-muted-foreground">—</span>
-        ) : (
-          <span className={cn('text-2xl font-bold', {
-            'text-health-high': health.score >= 70,
-            'text-health-medium': health.score >= 40 && health.score < 70,
-            'text-health-low': health.score < 40,
-          })}>
-            {Math.round(health.score)}
-          </span>
         )}
       </div>
 
