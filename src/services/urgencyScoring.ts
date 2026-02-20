@@ -12,6 +12,7 @@ export interface UrgencyTask {
   importance_weight: number;
   status: string;
   block_id: string;
+  vertical_id?: string;
   vertical_name?: string;
   vertical_color?: string;
 }

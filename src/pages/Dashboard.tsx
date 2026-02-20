@@ -16,6 +16,15 @@ export default function Dashboard() {
   const { data: verticals = [] } = useVerticals();
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [page, setPage] = useState<'main' | 'how-it-works' | 'about' | 'calendar'>('main');
+  const [highlightTaskId, setHighlightTaskId] = useState<string | null>(null);
+
+  const handleNavigateToTask = (verticalId: string, taskId: string) => {
+    setActiveTab(verticalId);
+    setPage('main');
+    setHighlightTaskId(taskId);
+    // Clear highlight after animation
+    setTimeout(() => setHighlightTaskId(null), 3000);
+  };
 
   const activeVertical = verticals.find(v => v.id === activeTab);
 
@@ -97,9 +106,9 @@ export default function Dashboard() {
           ) : page === 'about' ? (
             <About onBack={() => setPage('main')} />
           ) : activeTab === null || !activeVertical ? (
-            <HomePage />
+            <HomePage onNavigateToTask={handleNavigateToTask} />
           ) : (
-            <VerticalPage key={activeVertical.id} vertical={activeVertical} />
+            <VerticalPage key={activeVertical.id} vertical={activeVertical} highlightTaskId={highlightTaskId} />
           )}
         </div>
       </main>

@@ -19,7 +19,11 @@ function getHealthLabel(score: number) {
   return 'Critical';
 }
 
-export function HomePage() {
+interface HomePageProps {
+  onNavigateToTask?: (verticalId: string, taskId: string) => void;
+}
+
+export function HomePage({ onNavigateToTask }: HomePageProps) {
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: verticals = [] } = useVerticals();
@@ -69,7 +73,7 @@ export function HomePage() {
     const enriched: UrgencyTask[] = allTasks.map(t => {
       const block = allBlocks.find(b => b.id === t.block_id);
       const vertical = verticals.find(v => v.id === block?.vertical_id);
-      return { ...t, vertical_name: vertical?.name, vertical_color: vertical?.color ?? undefined };
+      return { ...t, vertical_id: vertical?.id, vertical_name: vertical?.name, vertical_color: vertical?.color ?? undefined };
     });
     return getTopUrgentTasks(enriched);
   }, [allTasks, allBlocks, verticals]);
@@ -144,7 +148,11 @@ export function HomePage() {
                 ? daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due today' : daysLeft === 1 ? '1d left' : `${daysLeft}d left`
                 : null;
               return (
-                <div key={task.id} className="px-5 py-3.5 flex items-center gap-3">
+                <div
+                  key={task.id}
+                  className="px-5 py-3.5 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => task.vertical_id && onNavigateToTask?.(task.vertical_id, task.id)}
+                >
                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: task.vertical_color || 'hsl(var(--primary))' }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{task.title}</p>

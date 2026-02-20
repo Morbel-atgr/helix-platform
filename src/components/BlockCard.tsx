@@ -20,9 +20,10 @@ interface BlockCardProps {
     description: string | null;
     vertical_id: string;
   };
+  highlightTaskId?: string | null;
 }
 
-export function BlockCard({ block }: BlockCardProps) {
+export function BlockCard({ block, highlightTaskId }: BlockCardProps) {
   const { data: tasks = [] } = useTasks(block.id);
   const createTask = useCreateTask();
   const updateBlock = useUpdateBlock();
@@ -165,7 +166,7 @@ export function BlockCard({ block }: BlockCardProps) {
       )}
 
       <CollapsibleContent className="space-y-1">
-        {activeTasks.map(task => <TaskItem key={task.id} task={task} />)}
+        {activeTasks.map(task => <TaskItem key={task.id} task={task} highlight={task.id === highlightTaskId} />)}
 
         {doneTasks.length > 0 && (
           <Collapsible open={doneOpen} onOpenChange={setDoneOpen} className="pt-2 mt-2 border-t border-border/50">
