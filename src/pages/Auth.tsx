@@ -7,8 +7,8 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
-  const { signIn, signUp } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const { signIn, signUp, resetPassword } = useAuth();
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -18,7 +18,11 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
 
-    if (isLogin) {
+    if (mode === 'forgot') {
+      const { error } = await resetPassword(email);
+      if (error) toast.error(error.message);
+      else toast.success('Check your email for a password reset link.');
+    } else if (mode === 'login') {
       const { error } = await signIn(email, password);
       if (error) toast.error(error.message);
     } else {
@@ -30,20 +34,19 @@ export default function Auth() {
     setLoading(false);
   };
 
+  const title = mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Sign in to your account' : 'Create your account';
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'hsl(210, 10%, 97%)' }}>
       <div className="w-full max-w-sm">
         <div className="glass-card p-8 space-y-6">
-          {/* Logo */}
           <div className="text-center space-y-3">
             <h1 className="iridescent-text -mb-3" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
-            <p className="text-muted-foreground text-sm">
-              {isLogin ? 'Sign in to your account' : 'Create your account'}
-            </p>
+            <p className="text-muted-foreground text-sm">{title}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+            {mode === 'signup' && (
               <div className="space-y-1.5">
                 <Label htmlFor="name">Name</Label>
                 <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
@@ -54,21 +57,46 @@ export default function Auth() {
               <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
             </div>
 
-            <div className="space-y-1.5">
-              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6} />
-            </div>
+            {mode !== 'forgot' && (
+              <div className="space-y-1.5">
+                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6} />
+              </div>
+            )}
+
+            {mode === 'login' && (
+              <div className="text-right">
+                <button type="button" onClick={() => setMode('forgot')} className="text-sm text-muted-foreground hover:underline">
+                  Forgot password?
+                </button>
+              </div>
+            )}
 
             <Button type="submit" className="w-full bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLogin ? 'Sign In' : 'Sign Up'}
+              {mode === 'forgot' ? 'Send Reset Link' : mode === 'login' ? 'Sign In' : 'Sign Up'}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
-            <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-muted-foreground hover:underline font-medium">
-              {isLogin ? 'Sign up' : 'Sign in'}
-            </button>
+            {mode === 'forgot' ? (
+              <button type="button" onClick={() => setMode('login')} className="text-muted-foreground hover:underline font-medium">
+                Back to sign in
+              </button>
+            ) : mode === 'login' ? (
+              <>
+                Don't have an account?{' '}
+                <button type="button" onClick={() => setMode('signup')} className="text-muted-foreground hover:underline font-medium">
+                  Sign up
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <button type="button" onClick={() => setMode('login')} className="text-muted-foreground hover:underline font-medium">
+                  Sign in
+                </button>
+              </>
+            )}
           </p>
         </div>
       </div>
