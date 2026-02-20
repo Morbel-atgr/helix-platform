@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { Activity, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
-import { format } from 'date-fns';
+import { format, differenceInCalendarDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 function getHealthLabel(score: number) {
@@ -137,6 +137,12 @@ export function HomePage() {
           <div className="glass-card divide-y divide-border">
             {urgentTasks.map(task => {
               const isOverdue = task.due_date && new Date(task.due_date) < new Date();
+              const daysLeft = task.due_date
+                ? differenceInCalendarDays(new Date(task.due_date), new Date())
+                : null;
+              const daysLabel = daysLeft !== null
+                ? daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due today' : daysLeft === 1 ? '1d left' : `${daysLeft}d left`
+                : null;
               return (
                 <div key={task.id} className="px-5 py-3.5 flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: task.vertical_color || 'hsl(var(--primary))' }} />
@@ -144,11 +150,18 @@ export function HomePage() {
                     <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
                     <p className="text-xs text-muted-foreground">{task.vertical_name}</p>
                   </div>
-                  {task.due_date && (
-                    <span className={cn('text-xs font-medium', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
-                      {format(new Date(task.due_date), 'MMM d')}
-                    </span>
-                  )}
+                  <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                    {task.due_date && (
+                      <span className={cn('text-xs font-medium', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
+                        {format(new Date(task.due_date), 'MMM d')}
+                      </span>
+                    )}
+                    {daysLabel && (
+                      <span className={cn('text-xs font-medium', daysLeft! < 0 ? 'text-destructive' : daysLeft! <= 2 ? 'text-health-low' : daysLeft! <= 7 ? 'text-health-medium' : 'text-primary')}>
+                        {daysLabel}
+                      </span>
+                    )}
+                  </div>
                 </div>
               );
             })}
