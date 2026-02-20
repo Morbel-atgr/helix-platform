@@ -93,12 +93,12 @@ export function TaskItem({ task }: TaskItemProps) {
         {task.due_date && (
           <Popover>
             <PopoverTrigger asChild>
-              <button className={cn('flex items-center gap-1 mt-0.5 text-xs hover:underline cursor-pointer', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
-                <CalendarIcon className="h-3 w-3" />
-                {format(new Date(task.due_date), 'MMM d, yyyy h:mm a')}
+              <button className={cn('flex items-center gap-1 mt-0.5 text-xs hover:underline cursor-pointer whitespace-nowrap', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
+                <CalendarIcon className="h-3 w-3 flex-shrink-0" />
+                {format(new Date(task.due_date), 'MMM d, HH:mm')}
                 {daysLabel && (
                   <span className={cn(
-                    'ml-1 font-medium',
+                    'font-medium',
                     daysLeft! < 0 ? 'text-destructive' : daysLeft! <= 2 ? 'text-health-low' : daysLeft! <= 7 ? 'text-health-medium' : 'text-primary'
                   )}>
                     · {daysLabel}
