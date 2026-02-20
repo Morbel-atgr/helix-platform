@@ -83,47 +83,47 @@ export function BlockCard({ block }: BlockCardProps) {
             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingName(false)}><X className="h-3 w-3" /></Button>
           </div>
         ) : (
-          <CollapsibleTrigger className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity">
-            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-0', !isOpen && '-rotate-90')} />
-            <h3 className="font-semibold text-sm text-foreground">{block.name}</h3>
+          <CollapsibleTrigger className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity min-w-0 flex-1">
+            <ChevronDown className={cn('h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 flex-shrink-0', isOpen ? 'rotate-0' : '-rotate-90')} />
+            <h3 className="font-semibold text-sm text-foreground truncate">{block.name}</h3>
+            {activeTasks.length > 0 && (
+              <span className="text-[10px] text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 flex-shrink-0">{activeTasks.length}</span>
+            )}
           </CollapsibleTrigger>
         )}
 
-        <div className="flex items-center gap-1">
-          <span className="text-xs text-muted-foreground font-mono">{activeTasks.length}</span>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setAddingTask(true)} title="Add task">
-            <Plus className="h-4 w-4" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-7 w-7">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setEditingName(true)}>
-                <Pencil className="mr-2 h-3 w-3" /> Rename
-              </DropdownMenuItem>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <DropdownMenuItem onSelect={e => e.preventDefault()} className="text-destructive">
-                    <Trash2 className="mr-2 h-3 w-3" /> Delete
-                  </DropdownMenuItem>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete "{block.name}"?</AlertDialogTitle>
-                    <AlertDialogDescription>This will permanently delete this block and all its tasks. This cannot be undone.</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => deleteBlock.mutate(block.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" className="h-7 w-7 flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setAddingTask(true)}>
+              <Plus className="mr-2 h-3 w-3" /> Add task
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setEditingName(true)}>
+              <Pencil className="mr-2 h-3 w-3" /> Rename
+            </DropdownMenuItem>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem onSelect={e => e.preventDefault()} className="text-destructive">
+                  <Trash2 className="mr-2 h-3 w-3" /> Delete
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete "{block.name}"?</AlertDialogTitle>
+                  <AlertDialogDescription>This will permanently delete this block and all its tasks. This cannot be undone.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => deleteBlock.mutate(block.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {addingTask && (
