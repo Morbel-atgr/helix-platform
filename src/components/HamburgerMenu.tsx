@@ -80,7 +80,7 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
           <SheetTitle className="text-left text-foreground">Settings</SheetTitle>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6 overflow-y-auto max-h-[calc(100vh-8rem)] pb-6">
+        <div className="mt-6 space-y-6 overflow-y-auto max-h-[calc(100vh-8rem)] pb-6 scrollbar-none">
           {/* Theme Toggle */}
           <div className="space-y-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Appearance</h3>
