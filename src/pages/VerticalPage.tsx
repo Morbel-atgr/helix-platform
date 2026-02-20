@@ -55,25 +55,25 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
           </div>
 
           {addingBlock ? (
-            <div className="glass-card p-4 space-y-3 max-w-sm">
+            <div className="flex items-center gap-2 max-w-sm">
               <Input
                 value={newBlockName}
                 onChange={e => setNewBlockName(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') handleCreateBlock(); if (e.key === 'Escape') setAddingBlock(false); }}
+                onKeyDown={e => { if (e.key === 'Enter') handleCreateBlock(); if (e.key === 'Escape') { setAddingBlock(false); setNewBlockName(''); } }}
                 placeholder="Block name..."
                 autoFocus
+                className="h-9"
               />
-              <div className="flex gap-2">
-                <Button size="sm" onClick={handleCreateBlock}>Create</Button>
-                <Button size="sm" variant="ghost" onClick={() => setAddingBlock(false)}><X className="h-4 w-4" /></Button>
-              </div>
+              <Button size="sm" onClick={handleCreateBlock} className="shrink-0">Create</Button>
+              <Button size="sm" variant="ghost" className="shrink-0" onClick={() => { setAddingBlock(false); setNewBlockName(''); }}><X className="h-4 w-4" /></Button>
             </div>
           ) : (
             <button
               onClick={() => setAddingBlock(true)}
-              className="glass-card p-4 border-dashed flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors min-h-[80px] max-w-sm"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
-              <Plus className="h-5 w-5" /> Add Block
+              <Plus className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              Add Block
             </button>
           )}
         </>
