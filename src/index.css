@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pacifico&display=swap');
 
 @layer base {
   :root {
@@ -129,8 +129,8 @@
   }
 
   .iridescent-text {
-    font-family: 'Dancing Script', cursive;
-    font-weight: 700;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
     font-size: 1.15em;
     background: linear-gradient(
       90deg,
