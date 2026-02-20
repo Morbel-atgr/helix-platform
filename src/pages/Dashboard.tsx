@@ -38,8 +38,7 @@ export default function Dashboard() {
                 onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
-              <Activity className="h-5 w-5 text-primary" />
-              <span className="text-lg font-bold text-foreground" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</span>
+              <span className="text-2xl text-foreground" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</span>
             </div>
           </div>
 
