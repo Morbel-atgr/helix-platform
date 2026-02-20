@@ -13,21 +13,23 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setHasError(false);
 
     if (mode === 'forgot') {
       const { error } = await resetPassword(email);
-      if (error) toast.error(error.message);
+      if (error) { toast.error(error.message); setHasError(true); }
       else toast.success('Check your email for a password reset link.');
     } else if (mode === 'login') {
       const { error } = await signIn(email, password);
-      if (error) toast.error(error.message);
+      if (error) { toast.error(error.message); setHasError(true); }
     } else {
       const { error } = await signUp(email, password, name);
-      if (error) toast.error(error.message);
+      if (error) { toast.error(error.message); setHasError(true); }
       else toast.success('Check your email to confirm your account.');
     }
 
@@ -54,12 +56,12 @@ export default function Auth() {
             )}
 
             <div className="space-y-1.5">
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
+              <Input id="email" type="email" value={email} onChange={e => { setEmail(e.target.value); setHasError(false); }} placeholder="Email" required className={hasError ? 'border-destructive focus-visible:ring-destructive' : ''} />
             </div>
 
             {mode !== 'forgot' && (
               <div className="space-y-1.5">
-                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6} />
+                <Input id="password" type="password" value={password} onChange={e => { setPassword(e.target.value); setHasError(false); }} placeholder="Password" required minLength={6} className={hasError ? 'border-destructive focus-visible:ring-destructive' : ''} />
               </div>
             )}
 
