@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { useVerticals } from '@/hooks/useVerticals';
 import { HomePage } from './HomePage';
 import { VerticalPage } from './VerticalPage';
 import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
-import { Button } from '@/components/ui/button';
-import { LogOut, Home } from 'lucide-react';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
+import { Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import helixLogo from '@/assets/helix-logo.png';
 
 export default function Dashboard() {
-  const { signOut } = useAuth();
   const { data: verticals = [] } = useVerticals();
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
@@ -22,9 +21,12 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-1">
-              <h1 className="text-xl font-bold tracking-tight mr-4">
-                <span className="text-gradient">Helix</span>
-              </h1>
+              <div className="flex items-center gap-2 mr-4">
+                <img src={helixLogo} alt="Helix" className="h-8 w-8 rounded-lg" />
+                <h1 className="text-xl font-brand text-gradient">
+                  Helix
+                </h1>
+              </div>
 
               {/* Tabs */}
               <nav className="flex items-center gap-0.5 overflow-x-auto">
@@ -61,9 +63,7 @@ export default function Dashboard() {
               </nav>
             </div>
 
-            <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
-              <LogOut className="h-4 w-4 mr-1" /> Sign out
-            </Button>
+            <HamburgerMenu />
           </div>
         </div>
       </header>
