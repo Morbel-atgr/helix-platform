@@ -1,15 +1,16 @@
-import { useVerticals } from '@/hooks/useVerticals';
+import { useVerticals, useUpdateVertical } from '@/hooks/useVerticals';
 import { useProfile } from '@/hooks/useProfile';
 import { HealthBar } from '@/components/HealthBar';
 import { calculateHealth } from '@/services/healthScoring';
 import { getTopUrgentTasks, UrgencyTask } from '@/services/urgencyScoring';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { Activity, TrendingUp } from 'lucide-react';
-import { useMemo } from 'react';
+import { Activity, TrendingUp, GripVertical } from 'lucide-react';
+import { useMemo, useCallback } from 'react';
 import { format, differenceInCalendarDays } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 
 function getHealthLabel(score: number) {
   if (score >= 90) return 'Excellent';
@@ -28,6 +29,8 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: verticals = [] } = useVerticals();
+  const updateVertical = useUpdateVertical();
+  const queryClient = useQueryClient();
 
   const verticalIds = verticals.map(v => v.id);
   const { data: allBlocks = [] } = useQuery({
@@ -79,6 +82,21 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
     return getTopUrgentTasks(enriched);
   }, [allTasks, allBlocks, verticals]);
 
+  const handleVerticalDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination || result.source.index === result.destination.index) return;
+    const reordered = Array.from(verticals);
+    const [moved] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, moved);
+
+    queryClient.setQueryData(['verticals', user?.id], reordered.map((v, i) => ({ ...v, order_index: i })));
+
+    reordered.forEach((v, index) => {
+      if (v.order_index !== index) {
+        updateVertical.mutate({ id: v.id, order_index: index });
+      }
+    });
+  }, [verticals, queryClient, user?.id, updateVertical]);
+
   return (
     <div className="space-y-10 animate-slide-up">
       {/* Greeting */}
@@ -97,39 +115,64 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
         </h2>
 
         {verticals.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {verticals.map(v => {
-              const h = verticalHealthMap[v.id] || { score: null, overdueCount: 0, urgentCount: 0, hasActiveTasks: false };
-              const noTasks = h.score === null;
-              return (
+          <DragDropContext onDragEnd={handleVerticalDragEnd}>
+            <Droppable droppableId="verticals-health" direction="horizontal">
+              {(provided) => (
                 <div
-                  key={v.id}
-                  className="glass-card p-5 space-y-3 cursor-pointer hover:bg-muted/50 transition-all"
-                  onClick={() => onNavigateToVertical?.(v.id)}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
-                    <h3 className="font-semibold text-foreground">{v.name}</h3>
-                  </div>
-                  {noTasks ? (
-                    <p className="text-sm text-muted-foreground">No tasks yet</p>
-                  ) : (
-                    <>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{getHealthLabel(h.score!)}</span>
-                        <span className={cn('font-semibold', {
-                          'text-health-high': h.score! >= 70,
-                          'text-health-medium': h.score! >= 40 && h.score! < 70,
-                          'text-health-low': h.score! < 40,
-                        })}>{Math.round(h.score!)}%</span>
-                      </div>
-                      <HealthBar score={h.score!} showLabel={false} />
-                    </>
-                  )}
+                  {verticals.map((v, index) => {
+                    const h = verticalHealthMap[v.id] || { score: null, overdueCount: 0, urgentCount: 0, hasActiveTasks: false };
+                    const noTasks = h.score === null;
+                    return (
+                      <Draggable key={v.id} draggableId={v.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={cn(
+                              "glass-card p-5 space-y-3 cursor-pointer hover:bg-muted/50 transition-all",
+                              snapshot.isDragging && "shadow-lg ring-2 ring-primary/20"
+                            )}
+                            onClick={() => onNavigateToVertical?.(v.id)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div
+                                {...provided.dragHandleProps}
+                                className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                <GripVertical className="h-4 w-4" />
+                              </div>
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
+                              <h3 className="font-semibold text-foreground">{v.name}</h3>
+                            </div>
+                            {noTasks ? (
+                              <p className="text-sm text-muted-foreground">No tasks yet</p>
+                            ) : (
+                              <>
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-muted-foreground">{getHealthLabel(h.score!)}</span>
+                                  <span className={cn('font-semibold', {
+                                    'text-health-high': h.score! >= 70,
+                                    'text-health-medium': h.score! >= 40 && h.score! < 70,
+                                    'text-health-low': h.score! < 40,
+                                  })}>{Math.round(h.score!)}%</span>
+                                </div>
+                                <HealthBar score={h.score!} showLabel={false} />
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         ) : (
           <div className="glass-card p-8 text-center">
             <p className="text-muted-foreground">No verticals yet. Create your first life domain to get started.</p>
