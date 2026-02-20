@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Menu, Moon, Sun, User, LogOut, Settings, ChevronDown, Trash2 } from 'lucide-react';
+import { Menu, Moon, Sun, User, LogOut, Settings, ChevronDown, Trash2, HelpCircle, Info } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -20,9 +20,10 @@ const COLORS = ['#2dd4bf', '#f472b6', '#fb923c', '#a78bfa', '#60a5fa', '#34d399'
 
 interface HamburgerMenuProps {
   onSelectVertical?: (id: string) => void;
+  onNavigate?: (page: string) => void;
 }
 
-export function HamburgerMenu({ onSelectVertical }: HamburgerMenuProps) {
+export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuProps) {
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const { theme, toggleTheme } = useTheme();
@@ -209,6 +210,26 @@ export function HamburgerMenu({ onSelectVertical }: HamburgerMenuProps) {
               <Label className="text-xs text-muted-foreground">Timezone</Label>
               <p className="text-sm text-foreground">{profile?.timezone || 'UTC'}</p>
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Links */}
+          <div className="space-y-1">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-sm text-muted-foreground"
+              onClick={() => { onNavigate?.('how-it-works'); setOpen(false); }}
+            >
+              <HelpCircle className="h-4 w-4 mr-2" /> How Health Scoring Works
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-sm text-muted-foreground"
+              onClick={() => { onNavigate?.('about'); setOpen(false); }}
+            >
+              <Info className="h-4 w-4 mr-2" /> About
+            </Button>
           </div>
 
           <Separator />
