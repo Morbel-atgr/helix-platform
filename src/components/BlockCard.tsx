@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTasks, useCreateTask } from '@/hooks/useTasks';
 import { useUpdateBlock, useDeleteBlock } from '@/hooks/useBlocks';
 import { TaskItem } from './TaskItem';
@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Plus, MoreHorizontal, Pencil, Trash2, Check, X, CalendarIcon } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, MoreHorizontal, Pencil, Trash2, Check, X, CalendarIcon, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
@@ -52,11 +53,21 @@ export function BlockCard({ block }: BlockCardProps) {
     setEditingName(false);
   };
 
-  const activeTasks = tasks.filter(t => t.status === 'active');
-  const doneTasks = tasks.filter(t => t.status === 'done');
+  const [isOpen, setIsOpen] = useState(true);
+
+  const sortByDue = (taskList: typeof tasks) =>
+    [...taskList].sort((a, b) => {
+      if (!a.due_date && !b.due_date) return 0;
+      if (!a.due_date) return 1;
+      if (!b.due_date) return -1;
+      return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+    });
+
+  const activeTasks = useMemo(() => sortByDue(tasks.filter(t => t.status === 'active')), [tasks]);
+  const doneTasks = useMemo(() => sortByDue(tasks.filter(t => t.status === 'done')), [tasks]);
 
   return (
-    <div className="glass-card p-4 space-y-3 animate-slide-up">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="glass-card p-4 space-y-3 animate-slide-up">
       <div className="flex items-center justify-between">
         {editingName ? (
           <div className="flex items-center gap-1 flex-1">
@@ -71,7 +82,10 @@ export function BlockCard({ block }: BlockCardProps) {
             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingName(false)}><X className="h-3 w-3" /></Button>
           </div>
         ) : (
-          <h3 className="font-semibold text-sm text-foreground">{block.name}</h3>
+          <CollapsibleTrigger className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity">
+            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-0', !isOpen && '-rotate-90')} />
+            <h3 className="font-semibold text-sm text-foreground">{block.name}</h3>
+          </CollapsibleTrigger>
         )}
 
         <div className="flex items-center gap-1">
@@ -108,44 +122,44 @@ export function BlockCard({ block }: BlockCardProps) {
         </div>
       </div>
 
-      <div className="space-y-0.5">
+      <CollapsibleContent className="space-y-0.5">
         {activeTasks.map(task => <TaskItem key={task.id} task={task} />)}
         {doneTasks.map(task => <TaskItem key={task.id} task={task} />)}
-      </div>
 
-      {addingTask ? (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Input
-              value={newTaskTitle}
-              onChange={e => setNewTaskTitle(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') handleCreateTask(); if (e.key === 'Escape') { setAddingTask(false); setNewTaskDue(undefined); } }}
-              placeholder="Task title..."
-              className="h-8 text-sm"
-              autoFocus
-            />
-            <Button size="sm" onClick={handleCreateTask} className="h-8">Add</Button>
-            <Button size="sm" variant="ghost" onClick={() => { setAddingTask(false); setNewTaskDue(undefined); }} className="h-8">
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn('h-7 text-xs gap-1.5 w-full justify-start', !newTaskDue && 'text-muted-foreground')}>
-                <CalendarIcon className="h-3 w-3" />
-                {newTaskDue ? format(newTaskDue, 'MMM d, yyyy') : 'Set deadline'}
+        {addingTask ? (
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center gap-2">
+              <Input
+                value={newTaskTitle}
+                onChange={e => setNewTaskTitle(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleCreateTask(); if (e.key === 'Escape') { setAddingTask(false); setNewTaskDue(undefined); } }}
+                placeholder="Task title..."
+                className="h-8 text-sm"
+                autoFocus
+              />
+              <Button size="sm" onClick={handleCreateTask} className="h-8">Add</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setAddingTask(false); setNewTaskDue(undefined); }} className="h-8">
+                <X className="h-3 w-3" />
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={newTaskDue} onSelect={setNewTaskDue} initialFocus disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} />
-            </PopoverContent>
-          </Popover>
-        </div>
-      ) : (
-        <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground h-8" onClick={() => setAddingTask(true)}>
-          <Plus className="mr-1 h-3 w-3" /> Add task
-        </Button>
-      )}
-    </div>
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn('h-7 text-xs gap-1.5 w-full justify-start', !newTaskDue && 'text-muted-foreground')}>
+                  <CalendarIcon className="h-3 w-3" />
+                  {newTaskDue ? format(newTaskDue, 'MMM d, yyyy') : 'Set deadline'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={newTaskDue} onSelect={setNewTaskDue} initialFocus disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} />
+              </PopoverContent>
+            </Popover>
+          </div>
+        ) : (
+          <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground h-8" onClick={() => setAddingTask(true)}>
+            <Plus className="mr-1 h-3 w-3" /> Add task
+          </Button>
+        )}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
