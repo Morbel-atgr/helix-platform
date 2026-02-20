@@ -22,8 +22,8 @@ export default function Dashboard() {
     setActiveTab(verticalId);
     setPage('main');
     setHighlightTaskId(taskId);
-    // Clear highlight after animation completes (matches 5s CSS animation)
-    setTimeout(() => setHighlightTaskId(null), 6000);
+    // Clear highlight after animation completes (matches 8s CSS animation + buffer)
+    setTimeout(() => setHighlightTaskId(null), 10000);
   };
 
   const activeVertical = verticals.find(v => v.id === activeTab);
