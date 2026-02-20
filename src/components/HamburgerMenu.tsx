@@ -221,7 +221,7 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
               className="w-full justify-start text-sm text-muted-foreground"
               onClick={() => { onNavigate?.('how-it-works'); setOpen(false); }}
             >
-              <HelpCircle className="h-4 w-4 mr-2" /> How Health Scoring Works
+              <HelpCircle className="h-4 w-4 mr-2" /> How Helix Works
             </Button>
             <Button
               variant="ghost"
