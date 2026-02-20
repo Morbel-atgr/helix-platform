@@ -1,4 +1,4 @@
-import { useBlocks, useCreateBlock } from '@/hooks/useBlocks';
+import { useBlocks, useCreateBlock, useUpdateBlock } from '@/hooks/useBlocks';
 import { useAllTasks } from '@/hooks/useTasks';
 import { VerticalHealth } from '@/components/VerticalHealth';
 import { BlockCard } from '@/components/BlockCard';
@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, X } from 'lucide-react';
 import { calculateHealth } from '@/services/healthScoring';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface VerticalPageProps {
   vertical: {
@@ -22,6 +24,8 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
   const blockIds = blocks.map(b => b.id);
   const { data: allTasks = [] } = useAllTasks(blockIds);
   const createBlock = useCreateBlock();
+  const updateBlock = useUpdateBlock();
+  const queryClient = useQueryClient();
 
   const [addingBlock, setAddingBlock] = useState(false);
   const [newBlockName, setNewBlockName] = useState('');
@@ -34,6 +38,24 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
     setNewBlockName('');
     setAddingBlock(false);
   };
+
+  const handleDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination || result.source.index === result.destination.index) return;
+
+    const reordered = Array.from(blocks);
+    const [moved] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, moved);
+
+    // Optimistic update
+    queryClient.setQueryData(['blocks', vertical.id], reordered.map((b, i) => ({ ...b, order_index: i })));
+
+    // Persist all changed positions
+    reordered.forEach((block, index) => {
+      if (block.order_index !== index) {
+        updateBlock.mutate({ id: block.id, order_index: index });
+      }
+    });
+  }, [blocks, vertical.id, queryClient, updateBlock]);
 
   return (
     <div className="space-y-6 animate-slide-up">
@@ -48,11 +70,36 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-            {blocks.map(block => (
-              <BlockCard key={block.id} block={block} highlightTaskId={highlightTaskId} />
-            ))}
-          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="blocks" direction="horizontal">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start"
+                >
+                  {blocks.map((block, index) => (
+                    <Draggable key={block.id} draggableId={block.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={snapshot.isDragging ? 'opacity-90 rotate-1 scale-[1.02] transition-transform' : ''}
+                        >
+                          <BlockCard
+                            block={block}
+                            highlightTaskId={highlightTaskId}
+                            dragHandleProps={provided.dragHandleProps}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
 
           {addingBlock ? (
             <div className="flex items-center gap-2 max-w-sm">
