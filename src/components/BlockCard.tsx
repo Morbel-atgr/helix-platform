@@ -4,8 +4,12 @@ import { useUpdateBlock } from '@/hooks/useBlocks';
 import { TaskItem } from './TaskItem';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, MoreHorizontal, Pencil, Archive, Check, X } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Plus, MoreHorizontal, Pencil, Archive, Check, X, CalendarIcon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface BlockCardProps {
   block: {
@@ -23,13 +27,19 @@ export function BlockCard({ block }: BlockCardProps) {
 
   const [addingTask, setAddingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDue, setNewTaskDue] = useState<Date | undefined>(undefined);
   const [editingName, setEditingName] = useState(false);
   const [blockName, setBlockName] = useState(block.name);
 
   const handleCreateTask = () => {
     if (!newTaskTitle.trim()) return;
-    createTask.mutate({ block_id: block.id, title: newTaskTitle.trim() });
+    createTask.mutate({
+      block_id: block.id,
+      title: newTaskTitle.trim(),
+      due_date: newTaskDue ? newTaskDue.toISOString() : undefined,
+    });
     setNewTaskTitle('');
+    setNewTaskDue(undefined);
     setAddingTask(false);
   };
 
@@ -88,19 +98,32 @@ export function BlockCard({ block }: BlockCardProps) {
       </div>
 
       {addingTask ? (
-        <div className="flex items-center gap-2">
-          <Input
-            value={newTaskTitle}
-            onChange={e => setNewTaskTitle(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') handleCreateTask(); if (e.key === 'Escape') setAddingTask(false); }}
-            placeholder="Task title..."
-            className="h-8 text-sm"
-            autoFocus
-          />
-          <Button size="sm" onClick={handleCreateTask} className="h-8">Add</Button>
-          <Button size="sm" variant="ghost" onClick={() => setAddingTask(false)} className="h-8">
-            <X className="h-3 w-3" />
-          </Button>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Input
+              value={newTaskTitle}
+              onChange={e => setNewTaskTitle(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleCreateTask(); if (e.key === 'Escape') { setAddingTask(false); setNewTaskDue(undefined); } }}
+              placeholder="Task title..."
+              className="h-8 text-sm"
+              autoFocus
+            />
+            <Button size="sm" onClick={handleCreateTask} className="h-8">Add</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setAddingTask(false); setNewTaskDue(undefined); }} className="h-8">
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn('h-7 text-xs gap-1.5 w-full justify-start', !newTaskDue && 'text-muted-foreground')}>
+                <CalendarIcon className="h-3 w-3" />
+                {newTaskDue ? format(newTaskDue, 'MMM d, yyyy') : 'Set deadline'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={newTaskDue} onSelect={setNewTaskDue} initialFocus disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} />
+            </PopoverContent>
+          </Popover>
         </div>
       ) : (
         <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground h-8" onClick={() => setAddingTask(true)}>
