@@ -24,7 +24,7 @@ export default function Dashboard() {
     setHighlightTaskId(taskId);
   };
 
-  const activeVertical = verticals.find(v => v.id === activeTab);
+  const activeVertical = verticals.find((v) => v.id === activeTab);
 
   return (
     <div className="min-h-screen bg-background">
@@ -34,56 +34,56 @@ export default function Dashboard() {
           {/* Row 1: Hamburger + centered Brand */}
           <div className="flex items-center py-3 gap-1">
             <HamburgerMenu
-              onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
-              onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
-            />
-            <span className="iridescent-text overflow-visible" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal' }}>Helix</span>
+              onSelectVertical={(id) => {setActiveTab(id);setPage('main');}}
+              onNavigate={(p) => {setPage(p as any);setActiveTab(null);}} />
+
+            <span className="iridescent-text overflow-visible font-normal text-3xl pr-[5px]" style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal' }}>Helix</span>
           </div>
 
           {/* Row 2: Tabs */}
           <nav className="flex items-center gap-1 pb-2 -mb-px overflow-x-auto">
             <button
-              onClick={() => { setActiveTab(null); setPage('main'); }}
+              onClick={() => {setActiveTab(null);setPage('main');}}
               className={cn(
                 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
-                activeTab === null && page === 'main'
-                  ? 'bg-muted text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-              )}
-            >
+                activeTab === null && page === 'main' ?
+                'bg-muted text-foreground' :
+                'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              )}>
+
               <Home className="h-3.5 w-3.5" />
               Home
             </button>
 
-            {verticals.map(v => (
-              <button
-                key={v.id}
-                onClick={() => { setActiveTab(v.id); setPage('main'); }}
-                className={cn(
-                  'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
-                  activeTab === v.id
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                )}
-              >
+            {verticals.map((v) =>
+            <button
+              key={v.id}
+              onClick={() => {setActiveTab(v.id);setPage('main');}}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
+                activeTab === v.id ?
+                'bg-muted text-foreground' :
+                'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              )}>
+
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
                 {v.name}
               </button>
-            ))}
+            )}
 
             <CreateVerticalDialog />
 
             <div className="flex-1" />
 
             <button
-              onClick={() => { setActiveTab(null); setPage('calendar'); }}
+              onClick={() => {setActiveTab(null);setPage('calendar');}}
               className={cn(
                 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
-                page === 'calendar'
-                  ? 'bg-muted text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-              )}
-            >
+                page === 'calendar' ?
+                'bg-muted text-foreground' :
+                'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              )}>
+
               <CalendarDays className="h-3.5 w-3.5" />
               Calendar
             </button>
@@ -94,19 +94,19 @@ export default function Dashboard() {
       {/* Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div key={`${page}-${activeTab}`} className="animate-fade-in">
-          {page === 'calendar' ? (
-            <CalendarPage />
-          ) : page === 'how-it-works' ? (
-            <HowItWorks onBack={() => setPage('main')} />
-          ) : page === 'about' ? (
-            <About onBack={() => setPage('main')} />
-          ) : activeTab === null || !activeVertical ? (
-            <HomePage onNavigateToTask={handleNavigateToTask} onNavigateToVertical={(id) => { setActiveTab(id); setPage('main'); }} />
-          ) : (
-            <VerticalPage key={activeVertical.id} vertical={activeVertical} highlightTaskId={highlightTaskId} />
-          )}
+          {page === 'calendar' ?
+          <CalendarPage /> :
+          page === 'how-it-works' ?
+          <HowItWorks onBack={() => setPage('main')} /> :
+          page === 'about' ?
+          <About onBack={() => setPage('main')} /> :
+          activeTab === null || !activeVertical ?
+          <HomePage onNavigateToTask={handleNavigateToTask} onNavigateToVertical={(id) => {setActiveTab(id);setPage('main');}} /> :
+
+          <VerticalPage key={activeVertical.id} vertical={activeVertical} highlightTaskId={highlightTaskId} />
+          }
         </div>
       </main>
-    </div>
-  );
+    </div>);
+
 }

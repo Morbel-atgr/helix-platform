@@ -25,9 +25,9 @@ export function HowItWorks({ onBack }: HowItWorksProps) {
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">Verticals</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Life domains like "Degree", "Work", or "Health". Each vertical has its own health score and contains blocks. 
-              You can customize their color and manage them from the sidebar.
+            <p className="text-xs text-muted-foreground leading-relaxed">Life domains like "Degree", "Work", or "Home". Each vertical has its own health score and contains blocks. You can customize their color and manage them from the sidebar.
+
+
             </p>
           </div>
         </div>
@@ -153,6 +153,6 @@ export function HowItWorks({ onBack }: HowItWorksProps) {
           Ranking combines time pressure with priority weight to surface what needs attention most.
         </p>
       </section>
-    </div>
-  );
+    </div>);
+
 }
