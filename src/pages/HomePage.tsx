@@ -93,7 +93,7 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       {/* Life Domains */}
       <div>
         <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Activity className="h-4 w-4 text-primary" /> Life Domains
+          <Activity className="h-4 w-4 text-primary" /> Verticals Health
         </h2>
 
         {verticals.length > 0 ? (
