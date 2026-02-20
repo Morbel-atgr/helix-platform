@@ -83,7 +83,7 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
       isDone ? 'opacity-50' : 'hover:bg-muted/50',
       isOverdue && !isDone && 'border-l-2 border-destructive',
       justCompleted && 'animate-task-done',
-      highlight && 'ring-2 ring-primary bg-primary/5'
+      highlight && 'animate-highlight-pulse rounded-lg'
     )}>
       <Checkbox
         checked={isDone}
