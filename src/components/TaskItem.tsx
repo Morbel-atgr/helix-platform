@@ -26,16 +26,23 @@ interface TaskItemProps {
 
 export function TaskItem({ task, highlight }: TaskItemProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [showHighlight, setShowHighlight] = useState(false);
 
   useEffect(() => {
-    if (highlight && ref.current) {
-      // Delay scroll to ensure layout is settled after async data load
-      const timer = setTimeout(() => {
+    if (highlight) {
+      // Small delay to ensure DOM is settled after async data loads
+      const startTimer = setTimeout(() => {
+        setShowHighlight(true);
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-      return () => clearTimeout(timer);
+      }, 400);
+      return () => clearTimeout(startTimer);
     }
   }, [highlight]);
+
+  const handleAnimationEnd = () => {
+    setShowHighlight(false);
+  };
+
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const [editing, setEditing] = useState(false);
@@ -82,12 +89,15 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
   };
 
   return (
-    <div ref={ref} className={cn(
+    <div
+      ref={ref}
+      onAnimationEnd={handleAnimationEnd}
+      className={cn(
       'group flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300',
       isDone ? 'opacity-50' : 'hover:bg-muted/50',
       isOverdue && !isDone && 'border-l-2 border-destructive',
       justCompleted && 'animate-task-done',
-      highlight && 'animate-highlight-pulse rounded-lg'
+      showHighlight && 'animate-highlight-pulse rounded-lg'
     )}>
       <Checkbox
         checked={isDone}
