@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Bumbbled';
+  src: url('/fonts/Bumbbled.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
@@ -129,6 +137,8 @@
   }
 
   .iridescent-text {
+    font-family: 'Bumbbled', cursive;
+    font-size: 1.2em;
     font-size: 1.15em;
     background: linear-gradient(
       90deg,
