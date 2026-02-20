@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useVerticals } from '@/hooks/useVerticals';
 import { HomePage } from './HomePage';
 import { VerticalPage } from './VerticalPage';
+import { HowItWorks } from './HowItWorks';
+import { About } from './About';
 import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { Home, Activity, LogOut } from 'lucide-react';
@@ -13,6 +15,7 @@ export default function Dashboard() {
   const { signOut } = useAuth();
   const { data: verticals = [] } = useVerticals();
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [page, setPage] = useState<'main' | 'how-it-works' | 'about'>('main');
 
   const activeVertical = verticals.find(v => v.id === activeTab);
 
@@ -24,7 +27,10 @@ export default function Dashboard() {
           {/* Row 1: Brand + actions */}
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-2">
-              <HamburgerMenu onSelectVertical={(id) => setActiveTab(id)} />
+              <HamburgerMenu
+                onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
+                onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
+              />
               <Activity className="h-5 w-5 text-primary" />
               <span className="text-lg font-bold text-foreground">Helix</span>
             </div>
@@ -71,7 +77,11 @@ export default function Dashboard() {
 
       {/* Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {activeTab === null || !activeVertical ? (
+        {page === 'how-it-works' ? (
+          <HowItWorks onBack={() => setPage('main')} />
+        ) : page === 'about' ? (
+          <About onBack={() => setPage('main')} />
+        ) : activeTab === null || !activeVertical ? (
           <HomePage />
         ) : (
           <VerticalPage key={activeVertical.id} vertical={activeVertical} />
