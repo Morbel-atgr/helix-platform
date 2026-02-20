@@ -24,7 +24,7 @@ export default function Dashboard() {
           {/* Row 1: Brand + actions */}
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-2">
-              <HamburgerMenu />
+              <HamburgerMenu onSelectVertical={(id) => setActiveTab(id)} />
               <Activity className="h-5 w-5 text-primary" />
               <span className="text-lg font-bold text-foreground">Helix</span>
             </div>
