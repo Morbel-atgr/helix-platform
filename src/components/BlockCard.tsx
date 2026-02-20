@@ -58,7 +58,7 @@ export function BlockCard({ block }: BlockCardProps) {
   };
 
   const [isOpen, setIsOpen] = useState(true);
-  const [doneOpen, setDoneOpen] = useState(false);
+  const [doneOpen, setDoneOpen] = useState(true);
 
   const sortByDue = (taskList: typeof tasks) =>
     [...taskList].sort((a, b) => {
