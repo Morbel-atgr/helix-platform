@@ -29,7 +29,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-background border-b border-border overflow-visible">
+      <header className="sticky top-0 z-40 border-b border-border overflow-visible bg-[#e8e8ed]">
         <div className="max-w-6xl mx-auto px-6 overflow-visible">
           {/* Row 1: Hamburger + centered Brand */}
           <div className="flex items-center py-3 gap-1">
