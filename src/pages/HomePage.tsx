@@ -21,9 +21,10 @@ function getHealthLabel(score: number) {
 
 interface HomePageProps {
   onNavigateToTask?: (verticalId: string, taskId: string) => void;
+  onNavigateToVertical?: (verticalId: string) => void;
 }
 
-export function HomePage({ onNavigateToTask }: HomePageProps) {
+export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePageProps) {
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: verticals = [] } = useVerticals();
@@ -100,7 +101,11 @@ export function HomePage({ onNavigateToTask }: HomePageProps) {
               const h = verticalHealthMap[v.id] || { score: null, overdueCount: 0, urgentCount: 0, hasActiveTasks: false };
               const noTasks = h.score === null;
               return (
-                <div key={v.id} className="glass-card p-5 space-y-3">
+                <div
+                  key={v.id}
+                  className="glass-card p-5 space-y-3 cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all"
+                  onClick={() => onNavigateToVertical?.(v.id)}
+                >
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
                     <h3 className="font-semibold text-foreground">{v.name}</h3>

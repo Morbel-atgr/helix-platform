@@ -106,7 +106,7 @@ export default function Dashboard() {
           ) : page === 'about' ? (
             <About onBack={() => setPage('main')} />
           ) : activeTab === null || !activeVertical ? (
-            <HomePage onNavigateToTask={handleNavigateToTask} />
+            <HomePage onNavigateToTask={handleNavigateToTask} onNavigateToVertical={(id) => { setActiveTab(id); setPage('main'); }} />
           ) : (
             <VerticalPage key={activeVertical.id} vertical={activeVertical} highlightTaskId={highlightTaskId} />
           )}
