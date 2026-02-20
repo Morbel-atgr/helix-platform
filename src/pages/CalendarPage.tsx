@@ -181,7 +181,7 @@ export function CalendarPage() {
               <div
                 key={dayKey}
                 className={cn(
-                  'min-h-[110px] border-b border-r border-border/50 p-2 transition-all',
+                  'min-h-[80px] border-b border-r border-border/50 p-2 transition-all',
                   !inMonth && 'bg-muted/10 opacity-40',
                   today && 'bg-primary/[0.04] ring-1 ring-inset ring-primary/20',
                   i % 7 === 6 && 'border-r-0',
@@ -210,7 +210,7 @@ export function CalendarPage() {
                       <div
                         key={task.id}
                         className={cn(
-                          'text-[10px] leading-tight px-1.5 py-[3px] rounded-md flex items-center gap-1 group/task cursor-default transition-all hover:shadow-sm',
+                          'text-[10px] leading-snug px-1.5 py-[3px] rounded-md cursor-default transition-all hover:shadow-sm',
                           isDone
                             ? 'bg-muted/60 text-muted-foreground line-through'
                             : 'font-medium'
@@ -221,10 +221,10 @@ export function CalendarPage() {
                         } : undefined}
                         title={`${task.title} · ${task.vertical_name} · P${task.importance_weight}`}
                       >
-                        <span className="truncate flex-1">{task.title}</span>
+                        <span className="break-words">{task.title}</span>
                         {!isDone && (
-                          <span className={cn('text-[9px] flex-shrink-0 font-semibold', urgencyColors[urgency])}>
-                            {label}
+                          <span className={cn('text-[9px] font-semibold whitespace-nowrap', urgencyColors[urgency])}>
+                            {' '}{label}
                           </span>
                         )}
                       </div>
