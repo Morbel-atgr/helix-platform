@@ -83,8 +83,8 @@ export function TaskItem({ task }: TaskItemProps) {
       </div>
 
       <div className="flex items-center gap-1">
-        <span className="text-xs font-mono text-muted-foreground px-1.5 py-0.5 rounded bg-muted">
-          W{task.importance_weight}
+        <span className="text-xs font-mono text-muted-foreground px-1.5 py-0.5 rounded bg-muted" title="Priority weight">
+          P{task.importance_weight}
         </span>
         <Button
           size="icon"
