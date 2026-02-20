@@ -29,7 +29,11 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
 
   useEffect(() => {
     if (highlight && ref.current) {
-      ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Delay scroll to ensure layout is settled after async data load
+      const timer = setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [highlight]);
   const updateTask = useUpdateTask();
