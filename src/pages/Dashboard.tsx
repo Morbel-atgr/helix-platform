@@ -4,9 +4,10 @@ import { HomePage } from './HomePage';
 import { VerticalPage } from './VerticalPage';
 import { HowItWorks } from './HowItWorks';
 import { About } from './About';
+import { CalendarPage } from './CalendarPage';
 import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
-import { Home, Activity, LogOut } from 'lucide-react';
+import { Home, Activity, LogOut, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ export default function Dashboard() {
   const { signOut } = useAuth();
   const { data: verticals = [] } = useVerticals();
   const [activeTab, setActiveTab] = useState<string | null>(null);
-  const [page, setPage] = useState<'main' | 'how-it-works' | 'about'>('main');
+  const [page, setPage] = useState<'main' | 'how-it-works' | 'about' | 'calendar'>('main');
 
   const activeVertical = verticals.find(v => v.id === activeTab);
 
@@ -42,10 +43,10 @@ export default function Dashboard() {
           {/* Row 2: Tabs */}
           <nav className="flex items-center gap-1 pb-2 -mb-px overflow-x-auto">
             <button
-              onClick={() => setActiveTab(null)}
+              onClick={() => { setActiveTab(null); setPage('main'); }}
               className={cn(
                 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
-                activeTab === null
+                activeTab === null && page === 'main'
                   ? 'bg-muted text-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               )}
@@ -57,7 +58,7 @@ export default function Dashboard() {
             {verticals.map(v => (
               <button
                 key={v.id}
-                onClick={() => setActiveTab(v.id)}
+                onClick={() => { setActiveTab(v.id); setPage('main'); }}
                 className={cn(
                   'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
                   activeTab === v.id
@@ -71,13 +72,30 @@ export default function Dashboard() {
             ))}
 
             <CreateVerticalDialog />
+
+            <div className="flex-1" />
+
+            <button
+              onClick={() => { setActiveTab(null); setPage('calendar'); }}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5',
+                page === 'calendar'
+                  ? 'bg-muted text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              )}
+            >
+              <CalendarDays className="h-3.5 w-3.5" />
+              Calendar
+            </button>
           </nav>
         </div>
       </header>
 
       {/* Content */}
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {page === 'how-it-works' ? (
+        {page === 'calendar' ? (
+          <CalendarPage />
+        ) : page === 'how-it-works' ? (
           <HowItWorks onBack={() => setPage('main')} />
         ) : page === 'about' ? (
           <About onBack={() => setPage('main')} />
