@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Activity } from 'lucide-react';
 
 export default function Auth() {
   const { signIn, signUp } = useAuth();
@@ -32,42 +32,40 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-5xl font-brand text-gradient">
-            Helix
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Your life operating system
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            {isLogin ? 'Welcome back' : 'Create account'}
-          </h2>
-
-          {!isLogin && (
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
+      <div className="w-full max-w-sm">
+        <div className="glass-card p-8 space-y-6">
+          {/* Logo */}
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted">
+              <Activity className="h-7 w-7 text-primary" />
             </div>
-          )}
-
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required />
+            <h1 className="text-2xl font-bold text-foreground">Helix</h1>
+            <p className="text-muted-foreground text-sm">
+              {isLogin ? 'Sign in to your account' : 'Create your account'}
+            </p>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
+              </div>
+            )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLogin ? 'Sign in' : 'Sign up'}
-          </Button>
+            <div className="space-y-1.5">
+              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
+            </div>
+
+            <div className="space-y-1.5">
+              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6} />
+            </div>
+
+            <Button type="submit" className="w-full bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLogin ? 'Sign In' : 'Sign Up'}
+            </Button>
+          </form>
 
           <p className="text-center text-sm text-muted-foreground">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
@@ -75,7 +73,7 @@ export default function Auth() {
               {isLogin ? 'Sign up' : 'Sign in'}
             </button>
           </p>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ function AppRoutes() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-gradient text-3xl font-brand animate-pulse-glow">Helix</div>
+        <div className="text-foreground text-2xl font-bold">Helix</div>
       </div>
     );
   }
