@@ -108,7 +108,11 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card border border-border rounded-xl;
+    @apply bg-card border border-border rounded-xl transition-shadow duration-300;
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 2px 12px -4px hsl(var(--primary) / 0.08);
   }
 
   .health-bar-track {
