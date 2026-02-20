@@ -56,12 +56,12 @@ export default function Auth() {
             )}
 
             <div className="space-y-1.5">
-              <Input id="email" type="email" value={email} onChange={e => { setEmail(e.target.value); setHasError(false); }} placeholder="Email" required className={hasError ? 'border-destructive focus-visible:ring-destructive' : ''} />
+              <Input id="email" type="email" value={email} onChange={e => { setEmail(e.target.value); setHasError(false); }} placeholder="Email" required className={hasError ? 'border-2 border-destructive ring-0 focus-visible:ring-0' : ''} />
             </div>
 
             {mode !== 'forgot' && (
               <div className="space-y-1.5">
-                <Input id="password" type="password" value={password} onChange={e => { setPassword(e.target.value); setHasError(false); }} placeholder="Password" required minLength={6} className={hasError ? 'border-destructive focus-visible:ring-destructive' : ''} />
+                <Input id="password" type="password" value={password} onChange={e => { setPassword(e.target.value); setHasError(false); }} placeholder="Password" required minLength={6} className={hasError ? 'border-2 border-destructive ring-0 focus-visible:ring-0' : ''} />
               </div>
             )}
 
