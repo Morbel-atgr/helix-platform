@@ -39,7 +39,7 @@ export default function Auth() {
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted">
               <Activity className="h-7 w-7 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Helix</h1>
+            <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</h1>
             <p className="text-muted-foreground text-sm">
               {isLogin ? 'Sign in to your account' : 'Create your account'}
             </p>
