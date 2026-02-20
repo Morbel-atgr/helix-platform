@@ -85,7 +85,7 @@ export function BlockCard({ block }: BlockCardProps) {
         ) : (
           <CollapsibleTrigger className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity min-w-0 flex-1">
             <ChevronDown className={cn('h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 flex-shrink-0', isOpen ? 'rotate-0' : '-rotate-90')} />
-            <h3 className="font-semibold text-sm text-foreground truncate">{block.name}</h3>
+            <h3 className="font-semibold text-sm text-foreground truncate" title={block.name}>{block.name}</h3>
             {activeTasks.length > 0 && (
               <span className="text-[10px] text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 flex-shrink-0">{activeTasks.length}</span>
             )}
