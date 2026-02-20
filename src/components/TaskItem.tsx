@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,9 +21,17 @@ interface TaskItemProps {
     status: string;
     completed_at: string | null;
   };
+  highlight?: boolean;
 }
 
-export function TaskItem({ task }: TaskItemProps) {
+export function TaskItem({ task, highlight }: TaskItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (highlight && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [highlight]);
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const [editing, setEditing] = useState(false);
@@ -70,11 +78,12 @@ export function TaskItem({ task }: TaskItemProps) {
   };
 
   return (
-    <div className={cn(
+    <div ref={ref} className={cn(
       'group flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300',
       isDone ? 'opacity-50' : 'hover:bg-muted/50',
       isOverdue && !isDone && 'border-l-2 border-destructive',
-      justCompleted && 'animate-task-done'
+      justCompleted && 'animate-task-done',
+      highlight && 'ring-2 ring-primary bg-primary/5'
     )}>
       <Checkbox
         checked={isDone}

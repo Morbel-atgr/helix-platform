@@ -14,9 +14,10 @@ interface VerticalPageProps {
     name: string;
     color: string | null;
   };
+  highlightTaskId?: string | null;
 }
 
-export function VerticalPage({ vertical }: VerticalPageProps) {
+export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
   const { data: blocks = [] } = useBlocks(vertical.id);
   const blockIds = blocks.map(b => b.id);
   const { data: allTasks = [] } = useAllTasks(blockIds);
@@ -48,7 +49,7 @@ export function VerticalPage({ vertical }: VerticalPageProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
           {blocks.map(block => (
-            <BlockCard key={block.id} block={block} />
+            <BlockCard key={block.id} block={block} highlightTaskId={highlightTaskId} />
           ))}
 
           {addingBlock ? (
