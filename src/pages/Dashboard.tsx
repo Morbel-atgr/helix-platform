@@ -38,7 +38,7 @@ export default function Dashboard() {
                 onSelectVertical={(id) => { setActiveTab(id); setPage('main'); }}
                 onNavigate={(p) => { setPage(p as any); setActiveTab(null); }}
               />
-              <span className="text-3xl text-foreground" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</span>
+              <span className="text-3xl iridescent-text" style={{ fontFamily: "'Bumbbled', cursive" }}>Helix</span>
             </div>
           </div>
 
