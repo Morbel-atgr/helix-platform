@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Trash2, Calendar as CalendarIcon, Pencil, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, differenceInCalendarDays } from 'date-fns';
 
 interface TaskItemProps {
   task: {
@@ -29,6 +29,20 @@ export function TaskItem({ task }: TaskItemProps) {
 
   const isDone = task.status === 'done';
   const isOverdue = task.due_date && !isDone && new Date(task.due_date) < new Date();
+
+  const daysLeft = task.due_date && !isDone
+    ? differenceInCalendarDays(new Date(task.due_date), new Date())
+    : null;
+
+  const daysLabel = daysLeft !== null
+    ? daysLeft < 0
+      ? `${Math.abs(daysLeft)}d overdue`
+      : daysLeft === 0
+        ? 'Due today'
+        : daysLeft === 1
+          ? '1d left'
+          : `${daysLeft}d left`
+    : null;
 
   const toggleStatus = () => {
     updateTask.mutate({
@@ -82,6 +96,14 @@ export function TaskItem({ task }: TaskItemProps) {
               <button className={cn('flex items-center gap-1 mt-0.5 text-xs hover:underline cursor-pointer', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
                 <CalendarIcon className="h-3 w-3" />
                 {format(new Date(task.due_date), 'MMM d, yyyy')}
+                {daysLabel && (
+                  <span className={cn(
+                    'ml-1 font-medium',
+                    daysLeft! < 0 ? 'text-destructive' : daysLeft! <= 2 ? 'text-health-low' : daysLeft! <= 7 ? 'text-health-medium' : 'text-primary'
+                  )}>
+                    · {daysLabel}
+                  </span>
+                )}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
