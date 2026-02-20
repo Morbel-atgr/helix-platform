@@ -36,7 +36,7 @@ export default function Auth() {
         <div className="glass-card p-8 space-y-6">
           {/* Logo */}
           <div className="text-center space-y-3">
-            <h1 className="iridescent-text -mb-1" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
+            <h1 className="iridescent-text -mb-3" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
             <p className="text-muted-foreground text-sm">
               {isLogin ? 'Sign in to your account' : 'Create your account'}
             </p>
