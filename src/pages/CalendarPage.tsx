@@ -210,7 +210,7 @@ export function CalendarPage() {
                       <div
                         key={task.id}
                         className={cn(
-                          'text-[10px] leading-snug px-1.5 py-[3px] rounded-md cursor-default transition-all hover:shadow-sm',
+                          'text-[11px] leading-snug px-1.5 py-1 rounded-md cursor-default transition-all hover:shadow-sm',
                           isDone
                             ? 'bg-muted/60 text-muted-foreground line-through'
                             : 'font-medium'
@@ -221,11 +221,11 @@ export function CalendarPage() {
                         } : undefined}
                         title={`${task.title} · ${task.vertical_name} · P${task.importance_weight}`}
                       >
-                        <span className="break-words">{task.title}</span>
+                        <div className="break-words">{task.title}</div>
                         {!isDone && (
-                          <span className={cn('text-[9px] font-semibold whitespace-nowrap', urgencyColors[urgency])}>
-                            {' '}{label}
-                          </span>
+                          <div className={cn('text-[10px] font-semibold mt-0.5', urgencyColors[urgency])}>
+                            {label}
+                          </div>
                         )}
                       </div>
                     );
