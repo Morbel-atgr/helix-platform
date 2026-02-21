@@ -11,17 +11,20 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const saved = localStorage.getItem('helix-theme') as Theme | null;
+    return saved === 'dark' ? 'dark' : 'light';
+  });
 
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
-    root.classList.add('light');
-    localStorage.setItem('helix-theme', 'light');
-  }, []);
+    root.classList.add(theme);
+    localStorage.setItem('helix-theme', theme);
+  }, [theme]);
 
-  const toggleTheme = () => {}; // Light mode only
-  const setTheme = (_t: Theme) => {}; // Light mode only
+  const toggleTheme = () => setThemeState(t => t === 'dark' ? 'light' : 'dark');
+  const setTheme = (t: Theme) => setThemeState(t);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
