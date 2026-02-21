@@ -21,8 +21,8 @@ export default function Auth() {
 
     if (mode === 'forgot') {
       const { error } = await resetPassword(email);
-      if (error) toast.error(error.message);
-      else toast.success('Check your email for a password reset link.');
+      if (error) toast.error(error.message);else
+      toast.success('Check your email for a password reset link.');
     } else if (mode === 'login') {
       const { error } = await signIn(email, password);
       if (error) toast.error(error.message);
@@ -30,7 +30,7 @@ export default function Auth() {
       // Check if email already exists before attempting signup
       try {
         const { data } = await supabase.functions.invoke('check-email-exists', {
-          body: { email },
+          body: { email }
         });
         if (data?.exists) {
           toast.error('An account with this email already exists.');
@@ -38,22 +38,22 @@ export default function Auth() {
           return;
         }
       } catch {
+
+
+
+
+
+
+
+
+
+
+
         // If check fails, proceed with signup anyway
-      }
-      const { error } = await signUp(email, password, name);
-      if (error) toast.error(error.message);
-      else toast.success('Check your email to confirm your account.');
-    }
-
-    setLoading(false);
-  };
-
-  const title = mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Sign in to your account' : 'Create your account';
-
-  return (
+      }const { error } = await signUp(email, password, name);if (error) toast.error(error.message);else toast.success('Check your email to confirm your account.');}setLoading(false);};const title = mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Sign in to your account' : 'Create your account';return (
     <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg">
         <div className="w-full max-w-sm flex flex-col items-center">
-          <h1 className="iridescent-text mb-4" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
+          <h1 className="iridescent-text mb-4 text-5xl pr-[6px] pt-0" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
           <div className="relative w-full rounded-xl p-[2px] iridescent-border">
             <div className="glass-card p-8 space-y-6 rounded-xl">
             <div className="text-center">
@@ -61,30 +61,30 @@ export default function Auth() {
             </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === 'signup' && (
+            {mode === 'signup' &&
               <div className="space-y-1.5">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" required />
               </div>
-            )}
+              }
 
             <div className="space-y-1.5">
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
             </div>
 
-            {mode !== 'forgot' && (
+            {mode !== 'forgot' &&
               <div className="space-y-1.5">
-                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required minLength={6} />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required minLength={6} />
               </div>
-            )}
+              }
 
-            {mode === 'login' && (
+            {mode === 'login' &&
               <div className="text-right">
                 <button type="button" onClick={() => setMode('forgot')} className="text-sm text-muted-foreground hover:underline">
                   Forgot password?
                 </button>
               </div>
-            )}
+              }
 
             <Button type="submit" className="w-full bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -93,29 +93,29 @@ export default function Auth() {
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            {mode === 'forgot' ? (
+            {mode === 'forgot' ?
               <button type="button" onClick={() => setMode('login')} className="text-muted-foreground hover:underline font-medium">
                 Back to sign in
-              </button>
-            ) : mode === 'login' ? (
+              </button> :
+              mode === 'login' ?
               <>
                 Don't have an account?{' '}
                 <button type="button" onClick={() => setMode('signup')} className="text-muted-foreground hover:underline font-medium">
                   Sign up
                 </button>
-              </>
-            ) : (
+              </> :
+
               <>
                 Already have an account?{' '}
                 <button type="button" onClick={() => setMode('login')} className="text-muted-foreground hover:underline font-medium">
                   Sign in
                 </button>
               </>
-            )}
+              }
           </p>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
