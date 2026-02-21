@@ -132,6 +132,17 @@
     @apply text-primary;
   }
 
+  .auth-gradient-bg {
+    background: linear-gradient(
+      135deg,
+      hsl(340 80% 92%) 0%,
+      hsl(300 60% 92%) 25%,
+      hsl(260 60% 90%) 50%,
+      hsl(220 70% 90%) 70%,
+      hsl(320 70% 92%) 100%
+    );
+  }
+
   .font-brand {
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 700;
