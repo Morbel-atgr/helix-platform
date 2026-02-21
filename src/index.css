@@ -6,7 +6,16 @@
   font-family: 'Bumbbled';
   src: url('/fonts/Bumbbled.ttf') format('truetype'),
        url('/fonts/Bumbbled.otf') format('opentype');
-  font-weight: normal;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Bumbbled';
+  src: url('/fonts/BumbbledLight-Earo9.ttf') format('truetype'),
+       url('/fonts/Bumbbled-Light.otf') format('opentype');
+  font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
