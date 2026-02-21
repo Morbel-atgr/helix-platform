@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Auth() {
   const { signIn, signUp, resetPassword } = useAuth();
@@ -26,6 +27,19 @@ export default function Auth() {
       const { error } = await signIn(email, password);
       if (error) toast.error(error.message);
     } else {
+      // Check if email already exists before attempting signup
+      try {
+        const { data } = await supabase.functions.invoke('check-email-exists', {
+          body: { email },
+        });
+        if (data?.exists) {
+          toast.error('An account with this email already exists.');
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // If check fails, proceed with signup anyway
+      }
       const { error } = await signUp(email, password, name);
       if (error) toast.error(error.message);
       else toast.success('Check your email to confirm your account.');
