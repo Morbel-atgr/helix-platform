@@ -52,12 +52,13 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg">
-        <div className="relative w-full max-w-sm rounded-xl p-[2px] iridescent-border">
-          <div className="glass-card p-8 space-y-6 rounded-xl">
-          <div className="text-center space-y-3">
-            <h1 className="iridescent-text -mb-3" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
-            <p className="text-muted-foreground text-sm">{title}</p>
-          </div>
+        <div className="w-full max-w-sm flex flex-col items-center">
+          <h1 className="iridescent-text mb-4" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
+          <div className="relative w-full rounded-xl p-[2px] iridescent-border">
+            <div className="glass-card p-8 space-y-6 rounded-xl">
+            <div className="text-center">
+              <p className="text-muted-foreground text-sm">{title}</p>
+            </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
@@ -114,6 +115,7 @@ export default function Auth() {
           </p>
           </div>
         </div>
+      </div>
     </div>
   );
 }
