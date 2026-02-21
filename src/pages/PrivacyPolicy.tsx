@@ -119,9 +119,9 @@ export function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
 
         <section className="space-y-2">
           <h2 className="text-base font-semibold text-foreground">10. Contact Us</h2>
-          <p>If you have questions regarding this Privacy Policy, please contact the Helix team.</p>
+          <p>If you have questions regarding this Privacy Policy, please contact the Helix team at belmor95@gmail.com   </p>
         </section>
       </div>
-    </div>
-  );
+    </div>);
+
 }
