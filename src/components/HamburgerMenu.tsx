@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useTheme } from '@/hooks/useTheme';
+import { useTimeFormat } from '@/hooks/useTimeFormat';
 import { useVerticals, useUpdateVertical } from '@/hooks/useVerticals';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const { theme, toggleTheme } = useTheme();
+  const timeFormatHook = useTimeFormat();
   const { data: verticals = [] } = useVerticals();
   const updateVertical = useUpdateVertical();
   const queryClient = useQueryClient();
@@ -209,6 +211,23 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Timezone</Label>
               <p className="text-sm text-foreground">{profile?.timezone || 'UTC'}</p>
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <Label className="text-xs text-muted-foreground">Time format</Label>
+              <div className="flex items-center gap-1 text-xs">
+                <button
+                  onClick={() => timeFormatHook.setTimeFormat('24h')}
+                  className={`px-2 py-1 rounded transition-colors ${timeFormatHook.timeFormat === '24h' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  24h
+                </button>
+                <button
+                  onClick={() => timeFormatHook.setTimeFormat('12h')}
+                  className={`px-2 py-1 rounded transition-colors ${timeFormatHook.timeFormat === '12h' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  AM/PM
+                </button>
+              </div>
             </div>
           </div>
 
