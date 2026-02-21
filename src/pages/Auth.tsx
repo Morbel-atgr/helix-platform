@@ -51,7 +51,7 @@ export default function Auth() {
   const title = mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Sign in to your account' : 'Create your account';
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'hsl(210, 10%, 97%)' }}>
+    <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg">
         <div className="relative w-full max-w-sm rounded-xl p-[2px] iridescent-border">
           <div className="glass-card p-8 space-y-6 rounded-xl">
           <div className="text-center space-y-3">

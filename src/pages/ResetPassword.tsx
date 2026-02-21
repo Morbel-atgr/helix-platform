@@ -42,7 +42,7 @@ export default function ResetPassword() {
 
   if (!isRecovery) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'hsl(210, 10%, 97%)' }}>
+      <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg">
         <div className="w-full max-w-sm">
           <div className="glass-card p-8 space-y-6 text-center">
             <h1 className="iridescent-text -mb-3" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 'bold' }}>Helix</h1>
@@ -54,7 +54,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'hsl(210, 10%, 97%)' }}>
+    <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg">
       <div className="w-full max-w-sm">
         <div className="glass-card p-8 space-y-6">
           <div className="text-center space-y-3">
