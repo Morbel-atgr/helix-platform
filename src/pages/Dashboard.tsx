@@ -4,6 +4,7 @@ import { HomePage } from './HomePage';
 import { VerticalPage } from './VerticalPage';
 import { HowItWorks } from './HowItWorks';
 import { About } from './About';
+import { PrivacyPolicy } from './PrivacyPolicy';
 import { CalendarPage } from './CalendarPage';
 import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
@@ -15,7 +16,7 @@ import { Button } from '@/components/ui/button';
 export default function Dashboard() {
   const { data: verticals = [] } = useVerticals();
   const [activeTab, setActiveTab] = useState<string | null>(null);
-  const [page, setPage] = useState<'main' | 'how-it-works' | 'about' | 'calendar'>('main');
+  const [page, setPage] = useState<'main' | 'how-it-works' | 'about' | 'calendar' | 'privacy'>('main');
   const [highlightTaskId, setHighlightTaskId] = useState<string | null>(null);
 
   const handleNavigateToTask = (verticalId: string, taskId: string) => {
@@ -100,6 +101,8 @@ export default function Dashboard() {
           <HowItWorks onBack={() => setPage('main')} /> :
           page === 'about' ?
           <About onBack={() => setPage('main')} /> :
+          page === 'privacy' ?
+          <PrivacyPolicy onBack={() => setPage('main')} /> :
           activeTab === null || !activeVertical ?
           <HomePage onNavigateToTask={handleNavigateToTask} onNavigateToVertical={(id) => {setActiveTab(id);setPage('main');}} /> :
 
