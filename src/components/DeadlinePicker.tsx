@@ -3,6 +3,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTimeFormat } from '@/hooks/useTimeFormat';
 
 interface DeadlinePickerProps {
   selected?: Date;
@@ -13,14 +14,9 @@ interface DeadlinePickerProps {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-function formatHour(h: number) {
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const display = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  return `${display}:00 ${ampm}`;
-}
-
 export function DeadlinePicker({ selected, onSelect, disablePast = false, showRemove = false }: DeadlinePickerProps) {
   const [hour, setHour] = useState<number>(selected ? selected.getHours() : 8);
+  const { formatHour } = useTimeFormat();
 
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;

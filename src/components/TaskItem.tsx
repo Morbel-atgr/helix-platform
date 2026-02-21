@@ -8,8 +8,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DeadlinePicker } from './DeadlinePicker';
 import { Trash2, Calendar as CalendarIcon, Pencil, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, differenceInCalendarDays } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { fireConfetti } from '@/lib/confetti';
+import { useTimeFormat } from '@/hooks/useTimeFormat';
 
 interface TaskItemProps {
   task: {
@@ -48,6 +49,7 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
 
+  const { formatTime } = useTimeFormat();
   const isDone = task.status === 'done';
   const isOverdue = task.due_date && !isDone && new Date(task.due_date) < new Date();
 
@@ -129,7 +131,7 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
             <PopoverTrigger asChild>
               <button className={cn('flex items-center gap-1 mt-0.5 text-xs hover:underline cursor-pointer whitespace-nowrap', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
                 <CalendarIcon className="h-3 w-3 flex-shrink-0" />
-                {format(new Date(task.due_date), 'MMM d, HH:mm')}
+                {format(new Date(task.due_date), 'MMM d') + ', ' + formatTime(new Date(task.due_date))}
                 {daysLabel && (
                   <span className={cn(
                     'font-medium',
