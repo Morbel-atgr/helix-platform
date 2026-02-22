@@ -6,7 +6,7 @@ import { getTopUrgentTasks, UrgencyTask } from '@/services/urgencyScoring';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { Activity, TrendingUp, GripVertical, HelpCircle } from 'lucide-react';
+import { Activity, TrendingUp, GripHorizontal, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMemo, useCallback } from 'react';
 import { format, differenceInCalendarDays } from 'date-fns';
@@ -152,9 +152,9 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
                             <div className="flex items-center gap-2">
                               <div
                                 {...provided.dragHandleProps}
-                                className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+                                className="cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
                               >
-                                <GripVertical className="h-4 w-4" />
+                                <GripHorizontal className="h-3.5 w-3.5" />
                               </div>
                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: v.color || 'hsl(var(--primary))' }} />
                               <h3 className="font-semibold text-foreground">{v.name}</h3>
