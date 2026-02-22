@@ -12,6 +12,7 @@ import { useMemo, useCallback } from 'react';
 import { format, differenceInCalendarDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 
 function getHealthLabel(score: number) {
   if (score >= 90) return 'Excellent';
@@ -185,8 +186,15 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
             </Droppable>
           </DragDropContext>
         ) : (
-          <div className="glass-card p-8 text-center">
-            <p className="text-muted-foreground">No verticals yet. Create your first life domain to get started.</p>
+          <div className="glass-card p-10 text-center space-y-4">
+            <div className="flex justify-center">
+              <Activity className="h-10 w-10 text-muted-foreground/30" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-foreground font-medium">No verticals yet</p>
+              <p className="text-sm text-muted-foreground">Create your first life domain to start tracking your goals.</p>
+            </div>
+            <CreateVerticalDialog />
           </div>
         )}
       </div>
