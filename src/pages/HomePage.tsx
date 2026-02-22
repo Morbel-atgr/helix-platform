@@ -194,7 +194,7 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
               <p className="text-foreground font-medium">No verticals yet</p>
               <p className="text-sm text-muted-foreground">Create your first life domain to start tracking your goals.</p>
             </div>
-            <CreateVerticalDialog />
+            <CreateVerticalDialog triggerClass="bg-health-high/10 text-health-high hover:bg-health-high/20 hover:text-health-high border border-health-high/20 h-10 px-6 font-semibold" />
           </div>
         )}
       </div>
