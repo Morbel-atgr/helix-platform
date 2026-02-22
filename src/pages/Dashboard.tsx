@@ -12,6 +12,7 @@ import { Home, Activity, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import confetti from 'canvas-confetti';
 
 export default function Dashboard() {
   const { data: verticals = [] } = useVerticals();
@@ -39,7 +40,22 @@ export default function Dashboard() {
               onNavigate={(p) => {setPage(p as any);setActiveTab(null);}} />
 
             <button 
-              onClick={() => {setActiveTab(null); setPage('main');}}
+              onClick={(e) => {
+                setActiveTab(null); setPage('main');
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = (rect.left + rect.width / 2) / window.innerWidth;
+                const y = (rect.top + rect.height / 2) / window.innerHeight;
+                confetti({
+                  particleCount: 25,
+                  spread: 50,
+                  startVelocity: 15,
+                  gravity: 0.8,
+                  scalar: 0.6,
+                  ticks: 80,
+                  origin: { x, y },
+                  colors: ['#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#34d399'],
+                });
+              }}
               className="iridescent-text overflow-visible font-normal text-3xl pr-[5px] pt-[4px] pl-0 mx-0 pb-px hover:opacity-80 transition-opacity cursor-pointer active:scale-95" 
               style={{ fontFamily: "'Bumbbled', cursive", lineHeight: 1.4, fontSize: '2.1rem', fontWeight: 'normal' }}
             >
