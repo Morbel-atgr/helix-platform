@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Menu, Moon, Sun, User, LogOut, Settings, ChevronDown, Trash2, HelpCircle, Info, Shield } from 'lucide-react';
+import { Menu, Moon, User, LogOut, Settings, ChevronDown, Trash2, HelpCircle, Info, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -88,9 +88,9 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Appearance</h3>
             <div className="flex items-center justify-between py-2">
               <div className="flex items-center gap-3">
-                {theme === 'dark' ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-primary" />}
+                <Moon className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium text-foreground">
-                  {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                  Dark mode
                 </span>
               </div>
               <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
