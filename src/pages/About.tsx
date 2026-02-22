@@ -23,8 +23,8 @@ export function About({ onBack }: AboutProps) {
         <div className="space-y-3">
           <h2 className="text-xl font-semibold text-foreground">Helix</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-            A personal life-management tool that helps you organize your life into domains, 
-            track tasks with smart deadlines, and stay on top of what matters most.
+            A personal life management tool that helps you organize your life into domains, track tasks with smart deadlines, and stay on top of what matters most.
+          
           </p>
         </div>
 
@@ -34,6 +34,6 @@ export function About({ onBack }: AboutProps) {
           <p className="text-sm text-muted-foreground mt-0.5">Product Manager & Information Systems Student</p>
         </div>
       </section>
-    </div>
-  );
+    </div>);
+
 }
