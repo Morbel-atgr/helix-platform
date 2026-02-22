@@ -6,7 +6,8 @@ import { getTopUrgentTasks, UrgencyTask } from '@/services/urgencyScoring';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { Activity, TrendingUp, GripVertical } from 'lucide-react';
+import { Activity, TrendingUp, GripVertical, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMemo, useCallback } from 'react';
 import { format, differenceInCalendarDays } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -112,6 +113,16 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       <div>
         <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
           <Activity className="h-4 w-4 text-primary" /> Verticals Health
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-[220px] text-xs">
+                Each card shows a life domain's health (0–100) based on upcoming deadlines. Drag to reorder.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </h2>
 
         {verticals.length > 0 ? (
@@ -184,6 +195,16 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       <div>
         <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-primary" /> Top Urgent Tasks
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-[220px] text-xs">
+                Your 5 most pressing tasks across all verticals, ranked by deadline urgency and priority weight.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </h2>
 
         {urgentTasks.length > 0 ? (
