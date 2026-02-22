@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const COLORS = ['#2dd4bf', '#f472b6', '#fb923c', '#a78bfa', '#60a5fa', '#34d399', '#fbbf24', '#f87171'];
 
-export function CreateVerticalDialog() {
+export function CreateVerticalDialog({ triggerClass }: { triggerClass?: string }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState(COLORS[0]);
@@ -24,7 +25,7 @@ export function CreateVerticalDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-muted-foreground h-8 px-3">
+        <Button variant="ghost" size="sm" className={cn("text-muted-foreground h-8 px-3", triggerClass)}>
           <Plus className="h-4 w-4 mr-1" /> Vertical
         </Button>
       </DialogTrigger>
