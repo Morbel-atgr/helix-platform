@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import helixLogo from '@/assets/helix-logo.png';
 
 interface AboutProps {
   onBack: () => void;
@@ -16,12 +17,12 @@ export function About({ onBack }: AboutProps) {
       </div>
 
       <section className="glass-card p-8 space-y-6 text-center">
-        <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-          <Sparkles className="h-8 w-8 text-primary" />
+        <div className="flex items-center justify-center">
+          <img src={helixLogo} alt="Helix logo" className="h-16 w-auto" />
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-xl font-semibold text-foreground">Helix</h2>
+          <h2 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '2rem', fontWeight: 'normal' }}>Helix</h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
             A personal life management tool that helps you organize your life into domains, track tasks with smart deadlines, and stay on top of what matters most.
           
