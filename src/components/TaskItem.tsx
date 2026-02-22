@@ -98,11 +98,11 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
       ref={ref}
       onAnimationEnd={handleAnimationEnd}
       className={cn(
-      'group flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 border border-transparent',
-      isDone ? 'opacity-40' : 'hover:bg-accent/40 hover:border-border/60 hover:shadow-sm',
+      'group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 border-b border-border/40 last:border-b-0',
+      isDone ? 'opacity-40' : 'hover:bg-accent/30',
       isOverdue && !isDone && 'border-l-2 !border-l-destructive bg-destructive/[0.03]',
       justCompleted && 'animate-task-done',
-      showHighlight && 'animate-highlight-pulse rounded-xl'
+      showHighlight && 'animate-highlight-pulse'
     )}>
       <Checkbox
         checked={isDone}
