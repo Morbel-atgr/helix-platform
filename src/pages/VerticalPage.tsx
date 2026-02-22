@@ -117,9 +117,9 @@ export function VerticalPage({ vertical, highlightTaskId }: VerticalPageProps) {
           ) : (
             <button
               onClick={() => setAddingBlock(true)}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+              className="w-full border-2 border-dashed border-border/60 hover:border-primary/40 rounded-lg py-6 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all group"
             >
-              <Plus className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <Plus className="h-4 w-4 group-hover:text-primary transition-colors" />
               Add Block
             </button>
           )}
