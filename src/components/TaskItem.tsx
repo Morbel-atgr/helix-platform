@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
+import { TaskNotesDrawer } from './TaskNotesDrawer';
+import { useTaskNotes } from '@/hooks/useTaskNotes';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DeadlinePicker } from './DeadlinePicker';
-import { Trash2, Calendar as CalendarIcon, Pencil, X, Check } from 'lucide-react';
+import { Trash2, Calendar as CalendarIcon, Pencil, X, Check, StickyNote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { fireConfetti } from '@/lib/confetti';
@@ -48,7 +50,8 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
   const deleteTask = useDeleteTask();
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
-
+  const [notesOpen, setNotesOpen] = useState(false);
+  const { data: notes = [] } = useTaskNotes(task.id);
   const { formatTime } = useTimeFormat();
   const isDone = task.status === 'done';
   const isOverdue = task.due_date && !isDone && new Date(task.due_date) < new Date();
@@ -212,6 +215,20 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
         <Button
           size="icon"
           variant="ghost"
+          className={cn('h-7 w-7 transition-opacity', notes.length > 0 ? 'opacity-70' : 'opacity-0 group-hover:opacity-100')}
+          onClick={() => setNotesOpen(true)}
+          title="Notes"
+        >
+          <StickyNote className="h-3 w-3" />
+          {notes.length > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[8px] rounded-full h-3.5 w-3.5 flex items-center justify-center font-medium">
+              {notes.length}
+            </span>
+          )}
+        </Button>
+        <Button
+          size="icon"
+          variant="ghost"
           className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={() => setEditing(true)}
         >
@@ -239,6 +256,7 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
           </AlertDialogContent>
         </AlertDialog>
       </div>
+      <TaskNotesDrawer open={notesOpen} onOpenChange={setNotesOpen} taskId={task.id} taskTitle={task.title} />
     </div>
   );
 }
