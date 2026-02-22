@@ -200,64 +200,66 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       </div>
 
       {/* Top Urgent Tasks */}
-      <div>
-        <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-muted-foreground transition-all duration-300 hover:text-green-500 hover:translate-x-0.5 hover:-translate-y-0.5 cursor-default" /> Top Urgent Tasks
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-[220px] text-xs">
-                Your 5 most pressing tasks across all verticals, ranked by deadline urgency and priority weight.
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </h2>
+      {verticals.length > 0 && (
+        <div>
+          <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-muted-foreground transition-all duration-300 hover:text-green-500 hover:translate-x-0.5 hover:-translate-y-0.5 cursor-default" /> Top Urgent Tasks
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-[220px] text-xs">
+                  Your 5 most pressing tasks across all verticals, ranked by deadline urgency and priority weight.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </h2>
 
-        {urgentTasks.length > 0 ? (
-          <div className="glass-card divide-y divide-border">
-            {urgentTasks.map(task => {
-              const isOverdue = task.due_date && new Date(task.due_date) < new Date();
-              const daysLeft = task.due_date
-                ? differenceInCalendarDays(new Date(task.due_date), new Date())
-                : null;
-              const daysLabel = daysLeft !== null
-                ? daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due today' : daysLeft === 1 ? '1d left' : `${daysLeft}d left`
-                : null;
-              return (
-                <div
-                  key={task.id}
-                  className="px-5 py-3.5 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => task.vertical_id && onNavigateToTask?.(task.vertical_id, task.id)}
-                >
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: task.vertical_color || 'hsl(var(--primary))' }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
-                    <p className="text-xs text-muted-foreground">{task.vertical_name}</p>
+          {urgentTasks.length > 0 ? (
+            <div className="glass-card divide-y divide-border">
+              {urgentTasks.map(task => {
+                const isOverdue = task.due_date && new Date(task.due_date) < new Date();
+                const daysLeft = task.due_date
+                  ? differenceInCalendarDays(new Date(task.due_date), new Date())
+                  : null;
+                const daysLabel = daysLeft !== null
+                  ? daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due today' : daysLeft === 1 ? '1d left' : `${daysLeft}d left`
+                  : null;
+                return (
+                  <div
+                    key={task.id}
+                    className="px-5 py-3.5 flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => task.vertical_id && onNavigateToTask?.(task.vertical_id, task.id)}
+                  >
+                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: task.vertical_color || 'hsl(var(--primary))' }} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
+                      <p className="text-xs text-muted-foreground">{task.vertical_name}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                      {task.due_date && (
+                        <span className={cn('text-xs font-medium', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
+                          {format(new Date(task.due_date), 'MMM d')}
+                        </span>
+                      )}
+                      {daysLabel && (
+                        <span className={cn('text-xs font-medium', daysLeft! < 0 ? 'text-destructive' : daysLeft! <= 2 ? 'text-health-low' : daysLeft! <= 7 ? 'text-health-medium' : 'text-primary')}>
+                          {daysLabel}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-                    {task.due_date && (
-                      <span className={cn('text-xs font-medium', isOverdue ? 'text-destructive' : 'text-muted-foreground')}>
-                        {format(new Date(task.due_date), 'MMM d')}
-                      </span>
-                    )}
-                    {daysLabel && (
-                      <span className={cn('text-xs font-medium', daysLeft! < 0 ? 'text-destructive' : daysLeft! <= 2 ? 'text-health-low' : daysLeft! <= 7 ? 'text-health-medium' : 'text-primary')}>
-                        {daysLabel}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="glass-card p-6 text-center">
-            <p className="text-muted-foreground">No urgent tasks. You're on top of things!</p>
-          </div>
-        )}
-      </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="glass-card p-6 text-center">
+              <p className="text-muted-foreground">No urgent tasks. You're on top of things!</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
