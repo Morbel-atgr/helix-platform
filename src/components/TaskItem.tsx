@@ -183,10 +183,10 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
         )}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5 shrink-0">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="text-xs font-mono text-muted-foreground px-1.5 py-0.5 rounded bg-muted hover:bg-muted/80 cursor-pointer transition-colors" title="Click to change priority">
+            <button className="text-[10px] font-medium text-muted-foreground/70 px-1.5 py-0.5 rounded-md border border-border/50 hover:border-border hover:text-muted-foreground cursor-pointer transition-all" title="Click to change priority">
               P{task.importance_weight}
             </button>
           </PopoverTrigger>
@@ -215,13 +215,13 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
         <Button
           size="icon"
           variant="ghost"
-          className={cn('h-7 w-7 transition-opacity', notes.length > 0 ? 'opacity-70' : 'opacity-0 group-hover:opacity-100')}
+          className={cn('relative h-7 w-7 transition-opacity', notes.length > 0 ? 'opacity-60 hover:opacity-100' : 'opacity-0 group-hover:opacity-60 hover:!opacity-100')}
           onClick={() => setNotesOpen(true)}
           title="Notes"
         >
-          <StickyNote className="h-3 w-3" />
+          <StickyNote className="h-3.5 w-3.5" />
           {notes.length > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[8px] rounded-full h-3.5 w-3.5 flex items-center justify-center font-medium">
+            <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[7px] leading-none rounded-full h-3 w-3 flex items-center justify-center font-semibold">
               {notes.length}
             </span>
           )}
@@ -229,19 +229,19 @@ export function TaskItem({ task, highlight }: TaskItemProps) {
         <Button
           size="icon"
           variant="ghost"
-          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="h-7 w-7 opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity"
           onClick={() => setEditing(true)}
         >
-          <Pencil className="h-3 w-3" />
+          <Pencil className="h-3.5 w-3.5" />
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+              className="h-7 w-7 opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity text-destructive hover:text-destructive"
             >
-              <Trash2 className="h-3 w-3" />
+              <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
