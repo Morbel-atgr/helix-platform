@@ -38,6 +38,11 @@ interface CalendarTask {
   importance_weight: number;
   vertical_name: string;
   vertical_color: string;
+  vertical_id: string;
+}
+
+interface CalendarPageProps {
+  onTaskClick?: (verticalId: string, taskId: string) => void;
 }
 
 function getDaysLabel(dueDate: string) {
@@ -62,13 +67,16 @@ const urgencyColors = {
 };
 
 // Shared task card component
-function TaskCard({ task, compact = false }: { task: CalendarTask; compact?: boolean }) {
+function TaskCard({ task, compact = false, onClick }: { task: CalendarTask; compact?: boolean; onClick?: () => void }) {
   const isDone = task.status === 'done';
   const { label, urgency } = getDaysLabel(task.due_date);
   return (
     <div
+      onClick={onClick}
       className={cn(
-        'leading-snug px-1.5 rounded-md cursor-default transition-all hover:shadow-sm',
+        'leading-snug px-1.5 rounded-md transition-all',
+        onClick && 'cursor-pointer hover:shadow-sm hover:scale-[1.01]',
+        !onClick && 'cursor-default',
         compact ? 'text-[11px] py-1' : 'text-xs py-1.5',
         isDone ? 'bg-muted/60 text-muted-foreground line-through' : 'font-medium'
       )}
@@ -92,7 +100,7 @@ function TaskCard({ task, compact = false }: { task: CalendarTask; compact?: boo
   );
 }
 
-export function CalendarPage() {
+export function CalendarPage({ onTaskClick }: CalendarPageProps) {
   const { user } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<ViewMode>('month');
@@ -138,6 +146,7 @@ export function CalendarPage() {
           importance_weight: t.importance_weight,
           vertical_name: vertical?.name || '',
           vertical_color: vertical?.color || 'hsl(var(--primary))',
+          vertical_id: verticalId || '',
         };
       }) as CalendarTask[];
     },
@@ -288,7 +297,7 @@ export function CalendarPage() {
                   </div>
                   <div className="space-y-[3px]">
                     {dayTasks.slice(0, 3).map(task => (
-                      <TaskCard key={task.id} task={task} compact />
+                      <TaskCard key={task.id} task={task} compact onClick={onTaskClick ? () => onTaskClick(task.vertical_id, task.id) : undefined} />
                     ))}
                     {dayTasks.length > 3 && (
                       <div className="text-[10px] text-muted-foreground font-medium px-1.5 cursor-default">
@@ -341,7 +350,7 @@ export function CalendarPage() {
                   )}
                 >
                   {dayTasks.map(task => (
-                    <TaskCard key={task.id} task={task} />
+                    <TaskCard key={task.id} task={task} onClick={onTaskClick ? () => onTaskClick(task.vertical_id, task.id) : undefined} />
                   ))}
                   {dayTasks.length === 0 && (
                     <div className="text-[10px] text-muted-foreground/50 text-center pt-4">—</div>
@@ -384,7 +393,7 @@ export function CalendarPage() {
                   {/* Tasks */}
                   <div className="flex-1 p-2 space-y-1.5">
                     {hourTasks.map(task => (
-                      <TaskCard key={task.id} task={task} />
+                      <TaskCard key={task.id} task={task} onClick={onTaskClick ? () => onTaskClick(task.vertical_id, task.id) : undefined} />
                     ))}
                   </div>
                 </div>
@@ -405,7 +414,7 @@ export function CalendarPage() {
                   </div>
                   <div className="flex-1 p-2 space-y-1.5">
                     {allDayTasks.map(task => (
-                      <TaskCard key={task.id} task={task} />
+                      <TaskCard key={task.id} task={task} onClick={onTaskClick ? () => onTaskClick(task.vertical_id, task.id) : undefined} />
                     ))}
                   </div>
                 </div>

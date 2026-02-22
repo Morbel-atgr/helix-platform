@@ -96,7 +96,7 @@ export default function Dashboard() {
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div key={`${page}-${activeTab}`} className="animate-fade-in pl-0">
           {page === 'calendar' ?
-          <CalendarPage /> :
+          <CalendarPage onTaskClick={handleNavigateToTask} /> :
           page === 'how-it-works' ?
           <HowItWorks onBack={() => setPage('main')} /> :
           page === 'about' ?
