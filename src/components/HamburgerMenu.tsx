@@ -90,7 +90,7 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
               <div className="flex items-center gap-3">
                 {theme === 'dark' ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-primary" />}
                 <span className="text-sm font-medium text-foreground">
-                  {theme === 'dark' ? 'Dark mode' : 'Light mode'}
+                  {theme === 'dark' ? 'Light mode' : 'Dark mode'}
                 </span>
               </div>
               <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
