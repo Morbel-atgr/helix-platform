@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,8 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -65,7 +67,27 @@ export default function Auth() {
 
 
         // If check fails, proceed with signup anyway
-      }const { error } = await signUp(email, password, name);if (error) toast.error(error.message);else toast.success('Check your email to confirm your account.');}setLoading(false);};const title = mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Sign in to your account' : 'Create your account';return <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg auth-light-override" style={{ colorScheme: 'light' }}>
+      }const { error } = await signUp(email, password, name);if (error) toast.error(error.message);else { toast.success('Check your email to confirm your account.'); setSignupSuccess(true); }}setLoading(false);};
+
+  const handleResendEmail = async () => {
+    if (resendCooldown > 0) return;
+    setLoading(true);
+    const { error } = await signUp(email, password, name);
+    if (error) toast.error(error.message);
+    else {
+      toast.success('Confirmation email resent!');
+      setResendCooldown(60);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
+  const title = mode === 'forgot' ? 'Reset password' : mode === 'login' ? 'Sign in to your account' : signupSuccess ? 'Check your email' : 'Create your account';return <div className="min-h-screen flex items-center justify-center px-4 auth-gradient-bg auth-light-override" style={{ colorScheme: 'light' }}>
         <div className="w-full max-w-sm flex flex-col items-center text-4xl">
           <h1 className="iridescent-text mb-4 text-5xl pr-[6px] pt-0" style={{ fontFamily: "'Bumbbled', cursive", fontSize: '3.5rem', fontWeight: 100 }}>Helix</h1>
           <div className="w-full glass-card p-8 space-y-6 rounded-xl">
@@ -73,6 +95,31 @@ export default function Auth() {
               <p className="text-muted-foreground text-sm">{title}</p>
             </div>
 
+          {mode === 'signup' && signupSuccess ? (
+            <div className="space-y-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                We sent a confirmation link to <span className="font-medium text-foreground">{email}</span>. Check your inbox (and spam folder).
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleResendEmail}
+                disabled={loading || resendCooldown > 0}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend confirmation email'}
+              </Button>
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setSignupSuccess(false); }}
+                className="text-sm text-muted-foreground hover:underline font-medium"
+              >
+                Back to sign in
+              </button>
+            </div>
+          ) : (
+          <>
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && <div className="space-y-1.5">
                 <Label htmlFor="name">Name</Label>
@@ -155,7 +202,9 @@ export default function Auth() {
                 </button>
               </>
           }
-          </p>
+           </p>
+          </>
+          )}
           </div>
       </div>
     </div>;
