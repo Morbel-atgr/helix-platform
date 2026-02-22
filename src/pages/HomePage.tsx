@@ -112,7 +112,7 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       {/* Life Domains */}
       <div>
         <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Activity className="h-4 w-4 text-primary" /> Verticals Health
+          <Activity className="h-4 w-4 text-muted-foreground transition-all duration-300 hover:text-green-500 hover:animate-pulse cursor-default" /> Verticals Health
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -194,7 +194,7 @@ export function HomePage({ onNavigateToTask, onNavigateToVertical }: HomePagePro
       {/* Top Urgent Tasks */}
       <div>
         <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-primary" /> Top Urgent Tasks
+          <TrendingUp className="h-4 w-4 text-muted-foreground transition-all duration-300 hover:text-green-500 hover:translate-x-0.5 hover:-translate-y-0.5 cursor-default" /> Top Urgent Tasks
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
