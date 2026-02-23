@@ -99,6 +99,8 @@ export default function Dashboard() {
 
             <div className="flex-1" />
 
+            <AiChatAgent />
+
             <button
               onClick={() => {setActiveTab(null);setPage('calendar');}}
               className={cn(
@@ -134,7 +136,8 @@ export default function Dashboard() {
         </div>
       </main>
 
-      <AiChatAgent />
+
+
     </div>);
 
 }
