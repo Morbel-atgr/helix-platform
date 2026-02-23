@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
+import { Sparkles, X, Send, Loader2, ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,7 +30,6 @@ export function AiChatAgent() {
   const createBlock = useCreateBlock();
   const createTask = useCreateTask();
 
-  // Fetch all blocks for context
   const verticalIds = verticals.map(v => v.id);
   const { data: allBlocks = [] } = useQuery({
     queryKey: ['all-blocks', verticalIds],
@@ -66,8 +65,17 @@ export function AiChatAgent() {
 
   useEffect(() => {
     if (open && inputRef.current) {
-      inputRef.current.focus();
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
+  }, [open]);
+
+  // Close on escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) setOpen(false);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [open]);
 
   const executeToolCall = async (toolCall: ToolCall): Promise<string> => {
@@ -98,7 +106,6 @@ export function AiChatAgent() {
       if (name === 'create_task') {
         const taskData: any = { block_id: args.block_id, title: args.title };
         if (args.due_date) taskData.due_date = args.due_date;
-
         const result = await new Promise<any>((resolve, reject) => {
           createTask.mutate(taskData, { onSuccess: resolve, onError: reject });
         });
@@ -133,44 +140,32 @@ export function AiChatAgent() {
 
         if (resp.error) throw new Error(resp.error.message);
         const data = resp.data;
-
         const choice = data.choices?.[0];
         if (!choice) throw new Error('No response from AI');
 
         const msg = choice.message;
 
-        // Handle tool calls
         if (msg.tool_calls && msg.tool_calls.length > 0) {
-          // Add assistant message with tool calls to conversation
           apiMessages.push({
             role: 'assistant',
             content: msg.content || null,
             tool_calls: msg.tool_calls,
           });
 
-          // Execute each tool call
           for (const tc of msg.tool_calls) {
             const result = await executeToolCall(tc);
-            apiMessages.push({
-              role: 'tool',
-              tool_call_id: tc.id,
-              content: result,
-            });
+            apiMessages.push({ role: 'tool', tool_call_id: tc.id, content: result });
           }
 
-          // Invalidate queries so context is fresh
           await queryClient.invalidateQueries({ queryKey: ['verticals'] });
           await queryClient.invalidateQueries({ queryKey: ['all-blocks'] });
           await queryClient.invalidateQueries({ queryKey: ['blocks'] });
           await queryClient.invalidateQueries({ queryKey: ['tasks'] });
           await queryClient.invalidateQueries({ queryKey: ['all-tasks'] });
           await queryClient.invalidateQueries({ queryKey: ['home-all-tasks'] });
-
-          // Continue the loop to get the AI's follow-up response
           continue;
         }
 
-        // Regular text response
         if (msg.content) {
           setMessages(prev => [...prev, { role: 'assistant', content: msg.content }]);
         }
@@ -184,102 +179,140 @@ export function AiChatAgent() {
     }
   };
 
+  const hasMessages = messages.length > 0;
+
+  // Collapsed: inline command bar. Expanded: slide-up panel.
   return (
     <>
-      {/* Floating button */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
-          aria-label="Open AI assistant"
-        >
-          <MessageSquare className="h-5 w-5" />
-        </button>
+      {/* Backdrop */}
+      {open && hasMessages && (
+        <div
+          className="fixed inset-0 z-40 bg-background/60 backdrop-blur-sm transition-opacity"
+          onClick={() => setOpen(false)}
+        />
       )}
 
-      {/* Chat panel */}
-      {open && (
-        <div className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-slide-up">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-health-high animate-pulse" />
-              <span className="text-sm font-semibold text-foreground">Helix AI</span>
-            </div>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setOpen(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.length === 0 && (
-              <div className="text-center py-8 space-y-2">
-                <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto" />
-                <p className="text-sm text-muted-foreground">Tell me to add a task and I'll guide you through it.</p>
-              </div>
-            )}
-
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={cn(
-                  'flex',
-                  msg.role === 'user' ? 'justify-end' : 'justify-start'
-                )}
-              >
-                <div
-                  className={cn(
-                    'max-w-[85%] rounded-2xl px-3.5 py-2 text-sm',
-                    msg.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-br-md'
-                      : 'bg-muted text-foreground rounded-bl-md'
+      <div className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-4 pointer-events-none",
+        open && hasMessages && "pb-0"
+      )}>
+        <div className={cn(
+          "pointer-events-auto w-full transition-all duration-300 ease-out",
+          open && hasMessages
+            ? "max-w-2xl bg-card border border-border rounded-t-2xl shadow-2xl flex flex-col max-h-[70vh]"
+            : "max-w-xl"
+        )}>
+          {/* Messages area — only when expanded */}
+          {open && hasMessages && (
+            <>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-medium text-muted-foreground">Helix AI</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {messages.length > 0 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground"
+                      onClick={() => setMessages([])}
+                    >
+                      Clear
+                    </Button>
                   )}
-                >
-                  {msg.role === 'assistant' ? (
-                    <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setOpen(false)}>
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
+                {messages.map((msg, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      'flex',
+                      msg.role === 'user' ? 'justify-end' : 'justify-start'
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'max-w-[80%] text-sm',
+                        msg.role === 'user'
+                          ? 'bg-primary/10 text-foreground rounded-2xl rounded-br-sm px-3.5 py-2'
+                          : 'text-foreground'
+                      )}
+                    >
+                      {msg.role === 'assistant' ? (
+                        <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>p]:leading-relaxed [&>ul]:my-1 [&>ol]:my-1 text-[13px]">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        <span className="text-[13px]">{msg.content}</span>
+                      )}
                     </div>
-                  ) : (
-                    msg.content
-                  )}
-                </div>
-              </div>
-            ))}
+                  </div>
+                ))}
 
-            {loading && (
-              <div className="flex justify-start">
-                <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-2.5">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                </div>
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="flex items-center gap-1.5 text-muted-foreground py-1">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span className="text-xs">Thinking...</span>
+                    </div>
+                  </div>
+                )}
               </div>
+            </>
+          )}
+
+          {/* Input bar — always visible at bottom */}
+          <div className={cn(
+            "flex items-center gap-2",
+            open && hasMessages
+              ? "px-3 py-2.5 border-t border-border/50"
+              : "bg-card border border-border rounded-xl shadow-lg px-3 py-2"
+          )}>
+            {!open && (
+              <Sparkles className="h-4 w-4 text-muted-foreground/50 shrink-0" />
             )}
-          </div>
-
-          {/* Input */}
-          <div className="p-3 border-t border-border">
-            <div className="flex items-center gap-2">
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                placeholder="Add a task..."
-                className="flex-1 bg-muted rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-ring"
-                disabled={loading}
-              />
-              <Button
-                size="icon"
-                className="h-8 w-8 shrink-0"
+            <input
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onFocus={() => { if (!open) setOpen(true); }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+                if (e.key === 'Escape') { setOpen(false); inputRef.current?.blur(); }
+              }}
+              placeholder={open ? "Tell Helix what to do..." : "Ask Helix to add a task..."}
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 outline-none"
+              disabled={loading}
+            />
+            {(input.trim() || loading) && (
+              <button
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
+                className={cn(
+                  "h-7 w-7 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                  input.trim() && !loading
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-muted text-muted-foreground"
+                )}
               >
-                <Send className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+                {loading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <ArrowUp className="h-3.5 w-3.5" />
+                )}
+              </button>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 }
