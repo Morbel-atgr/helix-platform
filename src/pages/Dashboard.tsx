@@ -9,6 +9,7 @@ import { CalendarPage } from './CalendarPage';
 import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { Home, Activity, CalendarDays } from 'lucide-react';
+import { AiChatAgent } from '@/components/AiChatAgent';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -132,6 +133,8 @@ export default function Dashboard() {
           }
         </div>
       </main>
+
+      <AiChatAgent />
     </div>);
 
 }
