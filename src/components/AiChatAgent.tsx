@@ -274,7 +274,7 @@ export function AiChatAgent() {
             "flex items-center gap-2",
             open && hasMessages
               ? "px-3 py-2.5 border-t border-border/50"
-              : "bg-card border border-border rounded-xl shadow-lg px-3 py-2"
+              : "bg-muted/80 border border-border/80 rounded-xl shadow-md px-3 py-2 backdrop-blur-sm"
           )}>
             {!open && (
               <Sparkles className="h-4 w-4 text-muted-foreground/50 shrink-0" />
