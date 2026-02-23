@@ -183,7 +183,7 @@ export function AiChatAgent() {
 
   // Collapsed: inline command bar. Expanded: slide-up panel.
   return (
-    <>
+    <div className="relative">
       {/* Backdrop */}
       {open && hasMessages && (
         <div
@@ -192,127 +192,136 @@ export function AiChatAgent() {
         />
       )}
 
-      <div className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-4 pointer-events-none",
-        open && hasMessages && "pb-0"
-      )}>
-        <div className={cn(
-          "pointer-events-auto w-full transition-all duration-300 ease-out",
-          open && hasMessages
-            ? "max-w-2xl bg-card border border-border rounded-t-2xl shadow-2xl flex flex-col max-h-[70vh]"
-            : "max-w-xl"
-        )}>
-          {/* Messages area — only when expanded */}
-          {open && hasMessages && (
-            <>
-              {/* Header */}
-              <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs font-medium text-muted-foreground">Helix AI</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {messages.length > 0 && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground"
-                      onClick={() => setMessages([])}
-                    >
-                      Clear
-                    </Button>
-                  )}
-                  <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setOpen(false)}>
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
+      {/* Expanded chat panel — anchored above the input */}
+      {open && hasMessages && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-0">
+          <div className="w-full max-w-2xl bg-card border border-border rounded-t-2xl shadow-2xl flex flex-col max-h-[70vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-medium text-muted-foreground">Helix AI</span>
               </div>
+              <div className="flex items-center gap-1">
+                {messages.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground"
+                    onClick={() => setMessages([])}
+                  >
+                    Clear
+                  </Button>
+                )}
+                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setOpen(false)}>
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
 
-              {/* Messages */}
-              <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
-                {messages.map((msg, i) => (
+            {/* Messages */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    'flex',
+                    msg.role === 'user' ? 'justify-end' : 'justify-start'
+                  )}
+                >
                   <div
-                    key={i}
                     className={cn(
-                      'flex',
-                      msg.role === 'user' ? 'justify-end' : 'justify-start'
+                      'max-w-[80%] text-sm',
+                      msg.role === 'user'
+                        ? 'bg-primary/10 text-foreground rounded-2xl rounded-br-sm px-3.5 py-2'
+                        : 'text-foreground'
                     )}
                   >
-                    <div
-                      className={cn(
-                        'max-w-[80%] text-sm',
-                        msg.role === 'user'
-                          ? 'bg-primary/10 text-foreground rounded-2xl rounded-br-sm px-3.5 py-2'
-                          : 'text-foreground'
-                      )}
-                    >
-                      {msg.role === 'assistant' ? (
-                        <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>p]:leading-relaxed [&>ul]:my-1 [&>ol]:my-1 text-[13px]">
-                          <ReactMarkdown>{msg.content}</ReactMarkdown>
-                        </div>
-                      ) : (
-                        <span className="text-[13px]">{msg.content}</span>
-                      )}
-                    </div>
+                    {msg.role === 'assistant' ? (
+                      <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>p]:leading-relaxed [&>ul]:my-1 [&>ol]:my-1 text-[13px]">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <span className="text-[13px]">{msg.content}</span>
+                    )}
                   </div>
-                ))}
+                </div>
+              ))}
 
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="flex items-center gap-1.5 text-muted-foreground py-1">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      <span className="text-xs">Thinking...</span>
-                    </div>
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="flex items-center gap-1.5 text-muted-foreground py-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span className="text-xs">Thinking...</span>
                   </div>
-                )}
-              </div>
-            </>
-          )}
+                </div>
+              )}
+            </div>
 
-          {/* Input bar — always visible at bottom */}
-          <div className={cn(
-            "flex items-center gap-2",
-            open && hasMessages
-              ? "px-3 py-2.5 border-t border-border/50"
-              : "bg-card border-2 border-border rounded-xl shadow-lg px-3 py-2.5 ring-1 ring-black/5 dark:ring-white/10"
-          )}>
-            {!open && (
-              <Sparkles className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-            )}
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onFocus={() => { if (!open) setOpen(true); }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-                if (e.key === 'Escape') { setOpen(false); inputRef.current?.blur(); }
-              }}
-              placeholder={open ? "Tell Helix what to do..." : "Ask Helix to add a task..."}
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 outline-none"
-              disabled={loading}
-            />
-            {(input.trim() || loading) && (
-              <button
-                onClick={sendMessage}
-                disabled={loading || !input.trim()}
-                className={cn(
-                  "h-7 w-7 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-                  input.trim() && !loading
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {loading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <ArrowUp className="h-3.5 w-3.5" />
-                )}
-              </button>
-            )}
+            {/* Input inside expanded panel */}
+            <div className="px-3 py-2.5 border-t border-border/50 flex items-center gap-2">
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+                  if (e.key === 'Escape') { setOpen(false); inputRef.current?.blur(); }
+                }}
+                placeholder="Tell Helix what to do..."
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 outline-none"
+                disabled={loading}
+              />
+              {(input.trim() || loading) && (
+                <button
+                  onClick={sendMessage}
+                  disabled={loading || !input.trim()}
+                  className={cn(
+                    "h-7 w-7 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                    input.trim() && !loading
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {loading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Inline input — sits in the nav bar */}
+      <div className="flex items-center gap-2 bg-muted/60 border border-border/60 rounded-lg px-2.5 py-1.5 w-48 focus-within:w-64 transition-all duration-200">
+        <Sparkles className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
+        <input
+          ref={!open || !hasMessages ? inputRef : undefined}
+          value={open && hasMessages ? '' : input}
+          onChange={e => { if (!open || !hasMessages) setInput(e.target.value); }}
+          onFocus={() => { if (!open) setOpen(true); }}
+          onKeyDown={e => {
+            if (open && hasMessages) return;
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+            if (e.key === 'Escape') { setOpen(false); inputRef.current?.blur(); }
+          }}
+          placeholder="Ask Helix..."
+          className="flex-1 bg-transparent text-xs text-foreground placeholder:text-muted-foreground/50 outline-none min-w-0"
+          disabled={loading}
+        />
+        {input.trim() && !open && (
+          <button
+            onClick={sendMessage}
+            disabled={loading || !input.trim()}
+            className="h-5 w-5 rounded flex items-center justify-center shrink-0 bg-primary text-primary-foreground"
+          >
+            <ArrowUp className="h-3 w-3" />
+          </button>
+        )}
       </div>
-    </>
+    </div>
   );
 }
