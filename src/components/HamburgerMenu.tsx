@@ -11,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Menu, Moon, User, LogOut, Settings, ChevronDown, Trash2, HelpCircle, Info, Shield } from 'lucide-react';
+import { Menu, Moon, User, LogOut, Settings, ChevronDown, Trash2, HelpCircle, Info, Shield, FileDown } from 'lucide-react';
+import { downloadPRD } from '@/lib/generatePRD';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -248,6 +249,13 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
               onClick={() => { onNavigate?.('about'); setOpen(false); }}
             >
               <Info className="h-4 w-4 mr-2" /> About
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-sm text-muted-foreground"
+              onClick={() => { downloadPRD(); setOpen(false); }}
+            >
+              <FileDown className="h-4 w-4 mr-2" /> Download PRD
             </Button>
             <Button
               variant="ghost"
