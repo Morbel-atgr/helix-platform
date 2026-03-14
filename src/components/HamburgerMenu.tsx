@@ -251,13 +251,6 @@ export function HamburgerMenu({ onSelectVertical, onNavigate }: HamburgerMenuPro
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start text-sm text-muted-foreground"
-              onClick={() => { downloadPRD(); setOpen(false); }}
-            >
-              <FileDown className="h-4 w-4 mr-2" /> Download PRD
-            </Button>
-            <Button
-              variant="ghost"
               className="w-full justify-start text-xs text-muted-foreground/70"
               onClick={() => { onNavigate?.('privacy'); setOpen(false); }}
             >
