@@ -1,14 +1,30 @@
 # Helix — Life Operating System
 
+## Overview
+
 Helix is a personal operating system for your life. Instead of one flat to-do list, it splits your life into **Verticals** (Work, Health, Finance, Family, …), each with its own tab, color and measurable **health score**, so you can see at a glance which part of your life is slipping.
 
-## The problem
+## How it works
 
-Life is fragmented across apps, inboxes and notebooks. Nothing tells you *which area* of your life is being neglected — only that you have 87 unfinished tasks.
+1. **Create Verticals** for the areas that matter to you — Work, Health, Finance, Relationships, Hobbies, etc.
+2. **Add Blocks** inside each vertical to group related tasks.
+3. **Add Tasks** with deadlines and priorities.
+4. **Track health** — each vertical gets a 0–100 score based on how well its tasks are doing. Deadlines approaching or overdue pull the score down; completing tasks on time keeps it up.
+5. **Focus** — the dashboard highlights your top urgent tasks across all verticals, so you always know what to do next.
 
-## The solution
+## The idea
 
-Helix makes each life area measurable and comparable, then surfaces the few things that actually matter right now.
+Helix is built for people who feel their life is fragmented across apps, inboxes, notebooks and sticky notes. It solves the problem of *knowing you have a lot to do, but not knowing which area of your life is actually falling apart*. Helix makes every life area measurable and comparable, then surfaces the few things that really matter right now.
+
+## Advantages and uniqueness
+
+Unlike scattered tools like Excel, WhatsApp reminders, Apple Notes or the classic "let's just do this on a sheet of paper", Helix gives you:
+
+- **A single, structured view** of your whole life — not just tasks, but *life areas*.
+- **Measurable health** for every vertical, so you can spot neglect before it becomes a crisis.
+- **Smart urgency ranking** that combines deadline pressure and priority to show what deserves attention now.
+- **Built-in AI agent** that creates tasks, blocks and verticals from natural language.
+- **A clean, minimalist design** with light/dark mode and no clutter.
 
 ## Features
 
@@ -27,7 +43,7 @@ Helix makes each life area measurable and comparable, then surfaces the few thin
 
 ## Tech stack
 
-React + TypeScript + Vite, Tailwind CSS, shadcn/ui, TanStack Query, @hello-pangea/dnd, and a Supabase backend (Postgres with row-level security, auth, and edge functions for the AI agent).
+React + TypeScript + Vite, Tailwind CSS, shadcn/ui, TanStack Query, @hello-pangea/dnd, and a Lovable Cloud backend (Postgres with row-level security, auth, and edge functions for the AI agent).
 
 ## Getting started
 
@@ -38,3 +54,7 @@ npm run dev
 
 The app runs on `http://localhost:8080`.
 
+## Resources
+
+- **Live preview:** https://helix-platform.lovable.app
+- **Helix Wiki:** available inside the app after signing in
