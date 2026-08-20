@@ -69,6 +69,7 @@ export default function ResetPassword() {
             <div className="space-y-1.5">
               <Label htmlFor="password">New Password</Label>
               <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="New password" required minLength={6} />
+              <p className="text-xs text-muted-foreground">At least 6 characters. Avoid passwords you've used on other sites.</p>
             </div>
 
             <div className="space-y-1.5">
