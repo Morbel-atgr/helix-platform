@@ -31,7 +31,10 @@ export default function ResetPassword() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      toast.error(error.message);
+      const msg = /pwned|weak|easy to guess/i.test(error.message)
+        ? 'This password has appeared in a public data breach, so it is easy to guess. Try adding a couple of extra words or characters.'
+        : error.message;
+      toast.error(msg);
     } else {
       toast.success('Password updated successfully!');
       navigate('/');
