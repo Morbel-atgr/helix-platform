@@ -1,228 +1,391 @@
 # Helix — Product Requirements Document
 
-**Version:** 1.0  
-**Date:** March 2026  
-**Author:** Mor Bel  
+**Version:** 2.0
+**Date:** August 2026
+**Author:** Mor Bel
+**Status:** Living document — reflects the product as currently built
 
 ---
 
-## 1. Overview
+## 1. Executive Summary
 
-Helix is a personal life management platform — a "Life Operating System" — that helps users organize their responsibilities across distinct life domains, track tasks with smart deadlines, and maintain awareness of what needs attention through a dynamic health scoring system.
+Helix is a personal "Life Operating System": a web application that replaces the flat to-do list with a three-level structure of life domains, project groupings, and tasks, then continuously scores each domain's health so users can see — at a glance — which part of their life is being neglected.
+
+Helix answers a single question every time it is opened: **"What deserves my attention right now, and what am I quietly letting slip?"**
 
 ---
 
 ## 2. Problem Statement
 
-People juggle multiple life domains simultaneously (academics, work, fitness, personal projects) but lack a unified system that:
+### 2.1 The problem
 
-- Groups tasks by life domain rather than a single flat list.
-- Surfaces the most urgent work automatically.
-- Provides a measurable "health" indicator per domain so users know where they're falling behind.
+Modern life is fragmented across parallel domains — a degree, a job, fitness, finances, side projects, family. Existing tools fail in three specific ways:
+
+1. **Flat lists lose context.** A single list of 60 items mixes "submit thesis chapter" with "buy milk". Domain boundaries disappear, and so does the sense of proportion.
+2. **Decision fatigue.** Users spend cognitive effort re-deciding what to work on every single session, because nothing ranks work for them.
+3. **Invisible neglect.** Nothing tells a user that they have not touched their Fitness domain for three weeks. Neglect is silent until it becomes a crisis.
+
+### 2.2 The Helix solution
+
+| Problem | Helix mechanism |
+|---|---|
+| Flat lists lose context | Verticals → Blocks → Tasks hierarchy, colour-coded per domain |
+| Decision fatigue | Automatic urgency ranking; the Top 5 Urgent Tasks list is computed, never curated |
+| Invisible neglect | A 0–100 Health Score per vertical, always visible on the home dashboard |
+| Deadline blindness | Calendar view across all domains plus deadline-proximity penalties |
+| Friction of data entry | Conversational AI agent that creates verticals, blocks, and tasks from plain language |
 
 ---
 
 ## 3. Target Users
 
-- University students managing coursework, jobs, and personal goals.
-- Knowledge workers balancing multiple projects and responsibilities.
-- Anyone seeking a structured, cross-domain task management approach.
+- **University students** juggling coursework, part-time work, and personal goals.
+- **Knowledge workers** balancing several concurrent projects and responsibilities.
+- **Multi-domain individuals** who want structural awareness rather than a longer list.
 
 ---
 
-## 4. Core Concepts
+## 4. Core Concepts and Data Model
+
+Helix has exactly one hierarchy. Everything in the product is an expression of it.
+
+```text
+Vertical  (life domain, e.g. "Degree")
+  └── Block  (grouping, e.g. "Statistics 101")
+        └── Task  (action item, e.g. "Submit problem set 4")
+              └── Note  (free-text, timestamped, many per task)
+```
 
 ### 4.1 Verticals
 
-Top-level life domains (e.g., "Degree", "Work", "Fitness"). Each vertical has:
+A vertical is a top-level life domain.
 
-| Attribute     | Description                                  |
-|---------------|----------------------------------------------|
-| Name          | User-defined label                           |
-| Color         | Unique colour for visual identification      |
-| Health Score  | Dynamic 0–100 score based on task deadlines  |
-| Blocks        | One or more task groups within the vertical   |
-| Archived      | Soft-delete flag                             |
+| Field | Type | Rules |
+|---|---|---|
+| id | UUID | Primary key, auto-generated |
+| user_id | UUID | Owner; cascade-deletes with the account |
+| name | Text | Required, user-defined |
+| description | Text | Optional |
+| color | Text | Hex colour chosen from an 8-swatch preset palette |
+| order_index | Integer | Drag-and-drop ordering on the dashboard; defaults to 0 |
+| archived | Boolean | Soft-delete flag, default false |
+| created_at | Timestamptz | Auto |
+
+**Functions:** create (name + colour), recolour, delete (cascades to all blocks, tasks, notes, with confirmation), reorder by drag and drop on the home dashboard, navigate to via tab bar or dashboard card.
 
 ### 4.2 Blocks
 
-Groups of related tasks inside a vertical (e.g., individual courses, projects, or focus areas). Blocks are collapsible and support rename/delete via a context menu.
+A block groups related tasks inside a vertical — a course, a project, a focus area.
+
+| Field | Type | Rules |
+|---|---|---|
+| id | UUID | Primary key |
+| vertical_id | UUID | Parent; cascade delete |
+| name | Text | Required |
+| description | Text | Optional |
+| order_index | Integer | Drag-and-drop ordering within the vertical |
+| archived | Boolean | Default false |
+| created_at | Timestamptz | Auto |
+
+**Functions:** create via a full-width dashed "Add Block" card, inline rename, delete with confirmation dialog (cascades to tasks), collapse/expand, drag to reorder, inline "add task" form with deadline picker.
 
 ### 4.3 Tasks
 
-Individual action items within a block.
+| Field | Type | Rules |
+|---|---|---|
+| id | UUID | Primary key |
+| block_id | UUID | Parent; cascade delete |
+| title | Text | Required; editable inline |
+| description | Text | Optional |
+| due_date | Timestamptz | Optional date + hour |
+| importance_weight | Integer | Priority P1–P10, default P5 |
+| status | Enum | `active` or `done` |
+| completed_at | Timestamptz | Set when marked done |
+| created_at / updated_at | Timestamptz | `updated_at` maintained by a database trigger |
 
-| Attribute          | Description                                      |
-|--------------------|--------------------------------------------------|
-| Title              | Required. Editable inline.                       |
-| Deadline           | Optional date + time. Defaults to 08:00 if unset.|
-| Priority Weight    | P1–P10 (default P5). Higher = more impact.       |
-| Status             | `active` or `done`                               |
-| Notes              | Multiple free-text notes per task                |
-| Description        | Optional longer description                      |
+**Functions:**
 
-**Behaviours:**
-- Auto-sorted by deadline proximity (most urgent first).
-- Completed tasks collapse into a "Done" section per block.
-- Inline editing for title, deadline, and priority.
+- Checkbox toggles active/done; completing a task fires a confetti burst and stamps `completed_at`.
+- Inline title editing.
+- Deadline popover: calendar + hour selector, respecting the user's 24h / AM-PM preference; deadline can be removed.
+- Priority popover: a 1–10 grid selector.
+- Notes button with a live badge count, opening the notes drawer.
+- Delete with confirmation dialog.
+- Active tasks are sorted by deadline proximity; completed tasks collapse into a per-block "Done" section.
+- When navigated to from the dashboard or calendar, the task scrolls into view and pulses to highlight itself.
 
 ### 4.4 Task Notes
 
-Each task supports multiple timestamped notes accessible via a side drawer. Tasks with notes display a badge count.
+Long-form free text attached to a task, shown in a right-side drawer.
+
+| Field | Type | Rules |
+|---|---|---|
+| id | UUID | Primary key |
+| task_id | UUID | Parent; cascade delete |
+| content | Text | Required |
+| created_at / updated_at | Timestamptz | `updated_at` maintained by trigger |
+
+**Functions:** add unlimited notes per task, edit in place, delete with confirmation, timestamps with an "(edited)" indicator, badge count surfaced on the task row.
+
+### 4.5 Profile
+
+| Field | Type | Rules |
+|---|---|---|
+| id / user_id | UUID | One profile per authenticated user, created automatically on signup |
+| name | Text | Display name, editable in Settings |
+| timezone | Text | Defaults to UTC (displayed read-only today) |
+| settings | JSONB | Holds `time_format` (`24h` default, or `12h`) |
+| created_at | Timestamptz | Auto |
+
+A database trigger creates the profile on account creation, seeding `name` from signup metadata or the email local part.
 
 ---
 
 ## 5. Health Score System
 
-Every vertical has a real-time health score (0–100) derived from its active tasks with deadlines.
+Every vertical carries a live 0–100 health score derived from the deadline pressure of its active tasks, weighted by priority.
 
-### 5.1 Scoring Rules
+### 5.1 Formula
 
-| Time to Deadline | Impact                                         |
-|------------------|-------------------------------------------------|
-| 7+ days          | No penalty                                      |
-| 1–7 days         | Gradual decrease as deadline approaches          |
-| Under 48 hours   | Significant penalty; flagged as urgent           |
-| Overdue          | Major penalty; grows with each overdue day       |
+Let `W` be the sum of `importance_weight` across all active tasks in the vertical, and `P` the accumulated weighted penalty. For each active task:
 
-### 5.2 Modifiers
+| Deadline state | Penalty applied |
+|---|---|
+| No deadline | 0 |
+| More than 7 days away | 0 |
+| Within 7 days | `weight × (1 − diff/7d) × 0.30` → ramps 0% to 30% |
+| Within 48 hours | `weight × (0.30 + (1 − diff/48h) × 0.25)` → 30% to 55% |
+| Overdue | `weight × min(1, 0.60 + daysOverdue × 0.10)` → 60% to 100% |
 
-- **Priority weight** amplifies the penalty (P10 task overdue hurts far more than P1).
-- Tasks without deadlines have zero health impact.
-- Completed tasks are excluded from scoring.
+`score = clamp(0, 100, round((1 − P / W) × 100))`
 
-### 5.3 Visual Indicators
+If the vertical has no active tasks, the score is null (an empty state is shown rather than a misleading 100). Completed tasks are always excluded.
 
-- Health bar with colour gradient: green (high) → yellow (medium) → red (low).
-- Displayed on the Home dashboard per vertical.
+### 5.2 Derived counters
+
+Alongside the score, each vertical reports **Overdue count** and **Urgent count** (tasks due within 48 hours).
+
+### 5.3 Visual language
+
+| Score | Label | Bar colour |
+|---|---|---|
+| 90–100 | Excellent | Green |
+| 70–89 | Good | Green |
+| 50–69 | Fair | Amber |
+| 30–49 | Needs Attention | Amber / Red |
+| 0–29 | Critical | Red |
+
+The bar uses dedicated health tokens (green / amber / red) that are independent of the app's neutral primary colour, and stay green above the 70 threshold in both light and dark mode.
 
 ---
 
-## 6. Priority Weight (P1–P10)
+## 6. Priority Weight and Urgency Ranking
 
-| Range     | Label    | Impact on Health & Urgency |
-|-----------|----------|----------------------------|
-| P1–P3     | Low      | Minor                      |
-| P4–P6     | Medium   | Moderate                   |
-| P7–P8     | High     | Strong                     |
-| P9–P10    | Critical | Maximum                    |
+### 6.1 Priority weight (P1–P10)
 
-Priority weight influences both the health score penalty and the urgency ranking on the dashboard.
+Default P5. Interpretation buckets shown in the UI:
+
+| Range | Label |
+|---|---|
+| P1–P3 | Low |
+| P4–P6 | Medium |
+| P7–P8 | High |
+| P9–P10 | Critical |
+
+Mathematically the weight is continuous: it multiplies both the health penalty and the urgency score, with P5 as the 1.0× baseline.
+
+### 6.2 Urgency score (Top 5 Urgent Tasks)
+
+For each active task with a deadline, let `h` be hours until due:
+
+| Condition | Time score |
+|---|---|
+| Overdue | `100 + min(|h|, 200)` |
+| `h ≤ 48` | `80 − (h/48) × 60` (range 20–80) |
+| `h ≤ 168` (7 days) | `20 − (h/168) × 15` (range 5–20) |
+| Beyond 7 days | 0 |
+
+`urgency = max(0, timeScore × importance_weight / 5)`
+
+Tasks scoring zero are excluded; the remainder are sorted descending and the top five are displayed on the home dashboard, each labelled with its parent vertical's name and colour.
 
 ---
 
-## 7. Pages & Navigation
+## 7. Application Surface — Screens and Functions
 
 ### 7.1 Home Dashboard
 
-- Displays health bars for all verticals.
-- Lists the **top 5 most urgent tasks** across all verticals.
-- Urgency ranking = time pressure × priority weight.
-- Clicking an urgent task navigates to it in its vertical.
+- Personalised greeting using the profile display name.
+- Grid of vertical health cards: name, colour, health bar, score label, overdue and urgent counters. Cards are drag-and-drop reorderable, and the order persists.
+- **Verticals Health** and **Top Urgent Tasks** sections each carry a help tip (`?`) explaining the mechanic — hover tooltip on desktop, tap popover on mobile.
+- **Top 5 Urgent Tasks** list; clicking a task jumps to its vertical, scrolls to it, and highlights it.
+- Hover micro-interactions: the activity icon pulses green, the trend arrow travels diagonally.
+- **Empty state for new users:** a large call-to-action card explaining verticals with an inline light-green "Create Vertical" button. The Top Urgent Tasks section is hidden entirely until at least one vertical exists.
 
 ### 7.2 Vertical Page
 
-- Shows all blocks and tasks for a selected vertical.
-- Supports creating, editing, and completing tasks.
-- Block-level actions: rename, delete, collapse/expand.
+- Health summary header with the health bar plus overdue/urgent counts, or an empty state.
+- All blocks rendered as cards, drag-reorderable, each collapsible.
+- Per-block: inline task creation with deadline picker, active task list sorted by deadline, collapsible Done section.
+- Full-width dashed "Add Block" card at the end of the list, highlighting on hover.
 
-### 7.3 Calendar View
+### 7.3 Calendar
 
-- Monthly / weekly / daily views.
-- Tasks with deadlines are colour-coded by vertical.
-- Clicking a task navigates to it in context.
+- Month, week, and day views.
+- Every task with a deadline appears, colour-coded by its vertical.
+- Clicking a calendar task navigates to the parent vertical and highlights the task.
+- Times render according to the user's 24h / AM-PM preference.
 
-### 7.4 Helix Wiki (How It Works)
+### 7.4 Helix Wiki ("How It Works")
 
-- In-app documentation with anchor-link table of contents.
-- Covers: Structure, Tasks, Health Score, Priority Weight, Calendar, Task Notes, Dashboard, Settings.
+In-app documentation with anchor-link navigation, covering: structure, tasks, health score, priority weight, calendar, task notes, dashboard, and settings.
 
-### 7.5 About Page
+### 7.5 About
 
-- Product description and creator attribution.
+Product description and creator attribution, with the iridescent Helix wordmark.
 
-### 7.6 Settings (via Hamburger Menu)
+### 7.6 Privacy Policy
 
-- **Theme:** Dark / Light mode toggle.
-- **Time format:** 12-hour / 24-hour.
-- **Vertical management:** Rename, re-colour, archive.
-- **Account:** Update display name, sign out.
+Static legal page reachable from the settings menu, with contact details.
+
+### 7.7 Settings (hamburger menu)
+
+| Section | Functions |
+|---|---|
+| Appearance | Dark mode switch (label always reads "Dark mode" with a moon icon; the switch state indicates whether it is on). Persisted to local storage. |
+| Verticals | List with colour picker popover, delete with cascade confirmation, click to navigate |
+| Account | Edit display name; sign out |
+| Preferences | Time format toggle (24h / AM-PM), persisted server-side to the profile and applied to every time display in the app; timezone shown read-only |
+| Links | Helix Wiki, About, Privacy Policy |
+
+### 7.8 Global navigation
+
+- Horizontal tab bar of verticals, plus a home tab.
+- Left hamburger menu for settings and secondary pages.
+- The Helix logo is a home button: clicking it navigates home and fires a confetti spark burst from the logo's position.
+- The wordmark uses the custom Bumbbled display font with an animated iridescent gradient.
 
 ---
 
-## 8. AI Chat Agent
+## 8. Helix AI Agent
 
-An inline AI assistant embedded in the navigation bar. Users can ask questions about their tasks, get suggestions, and interact conversationally. The chat panel expands from a compact command bar.
+An inline conversational command bar positioned in the navigation row next to the Calendar toggle. It expands into a slide-up conversation panel and collapses back to a compact input.
+
+**Capabilities:**
+
+- Natural-language task creation. The agent collects, in order: which vertical, which block (existing or new), the task title, and an optional deadline. If the user supplies everything at once, it acts immediately.
+- Tool calling against three functions: `create_vertical(name, color?)`, `create_block(vertical_id, name)`, and `create_task(block_id, title, due_date?)`.
+- The user's current verticals and blocks are passed as context each turn so the agent references real records by ID rather than inventing them.
+- Tool results are applied through the app's own data layer, so the dashboard, health scores, and calendar update immediately.
+- Markdown-rendered replies, auto-scroll, Escape to close, backdrop click to dismiss, and a Clear history action.
+- Graceful handling of rate limiting and credit exhaustion with user-facing messages.
+
+**Model:** Gemini 3 Flash via the Lovable AI gateway, invoked from a server-side edge function so no key is ever exposed to the browser.
 
 ---
 
 ## 9. Authentication
 
-- Email + password signup and login.
-- Email verification required before access.
-- Password reset flow via email link.
-- Privacy policy available at signup.
+| Flow | Behaviour |
+|---|---|
+| Email + password sign-up | Pre-checks whether the address already exists and blocks duplicates with a clear message; sends a confirmation email; shows a "check your email" screen with a **Resend confirmation** action on a 60-second cooldown |
+| Email + password sign-in | Standard credential sign-in with inline error messaging |
+| Google OAuth | One-click "Sign in with Google" / "Sign up with Google" (label adapts to the active tab), with a divider separating it from the email form. New Google users are provisioned automatically |
+| Password reset | "Forgot password" sends a reset link; the dedicated reset page sets the new password and returns the user to the app |
+| Session handling | The app subscribes to auth state changes and gates all content behind an authenticated session, with a loading splash during resolution |
+| Sign out | From the settings menu |
+
+The auth screen is deliberately locked to a light appearance regardless of the app theme, over a pastel gradient background, with the Helix wordmark placed above the card.
 
 ---
 
-## 10. Technical Architecture
+## 10. Design System
 
-| Layer          | Technology                          |
-|----------------|-------------------------------------|
-| Frontend       | React + Vite + TypeScript           |
-| Styling        | Tailwind CSS + shadcn/ui            |
-| State          | TanStack React Query                |
-| Backend        | Lovable Cloud (Supabase)            |
-| Auth           | Lovable Cloud Auth                  |
-| Database       | PostgreSQL (via Lovable Cloud)      |
-| Edge Functions | Deno (task-chat, check-email-exists)|
-| Animations     | CSS transitions + canvas-confetti   |
-
-### 10.1 Database Schema
-
-```
-verticals (id, user_id, name, color, description, order_index, archived, created_at)
-  └── blocks (id, vertical_id, name, description, order_index, archived, created_at)
-       └── tasks (id, block_id, title, description, due_date, importance_weight, status, completed_at, created_at, updated_at)
-            └── task_notes (id, task_id, content, created_at, updated_at)
-
-profiles (id, user_id, name, settings, timezone, created_at)
-```
-
-### 10.2 Security
-
-- Row-Level Security (RLS) on all tables.
-- Users can only access their own data.
-- No client-side role/admin checks.
+- **Typography:** Inter for the interface; Bumbbled (regular and light weights) for the Helix wordmark, rendered with an animated seven-stop iridescent gradient.
+- **Colour:** fully tokenised HSL custom properties for background, foreground, card, popover, primary, secondary, muted, accent, destructive, border, input, and ring — defined separately for light and dark themes. Light mode uses a neutral concrete-grey primary; dark mode uses a cyan-blue primary.
+- **Health tokens:** dedicated green / amber / red variables kept independent of the primary colour so health always reads correctly.
+- **Surfaces:** glass-style cards with a soft hover glow; corner radius 0.5rem; task rows use a divider-based editorial layout rather than boxed cards.
+- **Interaction:** drag handles use a subtle horizontal three-dot grip; confetti on task completion and logo click; pulse highlight on navigated-to tasks.
+- **Responsive:** mobile-first; tooltips degrade to tap popovers below the 768px breakpoint.
 
 ---
 
-## 11. Non-Functional Requirements
+## 11. Technical Architecture
 
-| Requirement    | Target                              |
-|----------------|-------------------------------------|
-| Responsiveness | Mobile-first, works on all devices  |
-| Performance    | < 2s initial load                   |
-| Accessibility  | Semantic HTML, keyboard navigation  |
-| Theme support  | Light and dark modes                |
-| Data privacy   | User data isolated via RLS          |
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 + Vite + TypeScript |
+| Styling | Tailwind CSS + shadcn/ui |
+| Server state | TanStack React Query |
+| Drag and drop | @hello-pangea/dnd |
+| Backend | Lovable Cloud (PostgreSQL, Auth, Edge Functions) |
+| AI | Lovable AI Gateway — Gemini 3 Flash |
+| Effects | canvas-confetti, CSS transitions |
+
+### 11.1 Edge functions
+
+| Function | Purpose |
+|---|---|
+| `task-chat` | Hosts the AI agent: system prompt, tool schema, gateway call, and error mapping for rate limits and credit exhaustion |
+| `check-email-exists` | Server-side duplicate-email check used before sign-up |
+
+### 11.2 Data integrity
+
+- `updated_at` triggers on tasks and task notes.
+- Cascade deletes down the entire hierarchy, including on account deletion.
+- Indexes on vertical owner, block parent, task parent, due date, and status.
+
+### 11.3 Security
+
+- Row-Level Security enabled on every table.
+- Verticals are scoped directly by owner; blocks, tasks, and notes are scoped by walking the ownership chain back to the authenticated user, so no user can read or write another user's records at any level.
+- Privileged operations (email existence check, AI calls) run server-side only.
+- No client-side role or admin checks.
 
 ---
 
-## 12. Future Considerations
+## 12. Non-Functional Requirements
 
-- **Outlook/Google Calendar integration** — sync meetings as tasks (OAuth or ICS import).
-- **Recurring tasks** — daily/weekly/monthly repeat patterns.
+| Requirement | Target |
+|---|---|
+| Responsiveness | Mobile-first; fully usable on phone, tablet, desktop |
+| Performance | Under 2 seconds to interactive on first load |
+| Accessibility | Semantic HTML, keyboard navigation, visible focus states |
+| Theming | Complete light and dark parity |
+| Data privacy | Strict per-user isolation enforced at the database level |
+| Resilience | Clear user-facing messaging for AI rate limits, credit exhaustion, and network failures |
+
+---
+
+## 13. Known Gaps
+
+- Timezone is stored and displayed but not yet user-editable.
+- Verticals can be recoloured and deleted from the settings menu but not renamed there.
+- Archive flags exist on verticals and blocks in the schema but are not yet exposed as an archive UI.
+- Task descriptions exist in the schema but are surfaced only through notes today.
+
+---
+
+## 14. Roadmap
+
+- **Calendar integration** — Outlook and Google Calendar, either via OAuth and Graph API or via lighter-weight ICS import, turning meetings into tasks.
+- **Recurring tasks** — daily, weekly, and monthly repeat patterns.
+- **Notifications** — deadline reminders by email or push.
+- **Health history** — trend charts showing score movement per vertical over time.
+- **Custom email domain** — branded transactional email to improve deliverability.
+- **Branded OAuth consent** — replace the default provider branding with Helix.
 - **Collaboration** — shared verticals or blocks.
-- **Mobile app** — React Native or PWA.
-- **Analytics dashboard** — completion trends, health history over time.
-- **Notifications** — deadline reminders via email or push.
+- **Mobile app** — PWA or React Native.
 
 ---
 
-## 13. Success Metrics
+## 15. Success Metrics
 
-- Daily active usage (tasks created/completed per session).
-- Health score maintenance (average score across verticals over time).
-- User retention (weekly return rate).
-- Task completion rate.
+| Metric | Definition |
+|---|---|
+| Activation | Percentage of new users who create a vertical and at least three tasks in week one |
+| Engagement | Tasks created and completed per active session |
+| Health maintenance | Average vertical health score trend across the user base |
+| Neglect recovery | Percentage of verticals that recover from below 50 to above 70 within 14 days |
+| Retention | Weekly return rate |
+| AI adoption | Share of tasks created through the Helix AI agent |
