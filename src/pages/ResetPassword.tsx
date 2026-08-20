@@ -31,7 +31,10 @@ export default function ResetPassword() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      toast.error(error.message);
+      const msg = /pwned|weak|easy to guess/i.test(error.message)
+        ? 'This password has appeared in a public data breach, so it is easy to guess. Try adding a couple of extra words or characters.'
+        : error.message;
+      toast.error(msg);
     } else {
       toast.success('Password updated successfully!');
       navigate('/');
@@ -66,6 +69,7 @@ export default function ResetPassword() {
             <div className="space-y-1.5">
               <Label htmlFor="password">New Password</Label>
               <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="New password" required minLength={6} />
+              <p className="text-xs text-muted-foreground">At least 6 characters. Avoid passwords you've used on other sites.</p>
             </div>
 
             <div className="space-y-1.5">
