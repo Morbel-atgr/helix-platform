@@ -10,6 +10,7 @@ import { CreateVerticalDialog } from '@/components/CreateVerticalDialog';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { Home, Activity, CalendarDays } from 'lucide-react';
 import { AiChatAgent } from '@/components/AiChatAgent';
+import { WalkthroughDialog } from '@/components/WalkthroughDialog';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <WalkthroughDialog />
       {/* Top bar */}
       <header className="sticky top-0 z-40 bg-background border-b border-border overflow-visible">
         <div className="max-w-6xl mx-auto px-6 overflow-visible">
